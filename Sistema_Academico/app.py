@@ -19,6 +19,7 @@ from infraestructura.persistencia.repositories.organizacion_repositorio import O
 from infraestructura.persistencia.repositories.panel_pendientes_repositorio import PanelPendientesRepositorio
 from infraestructura.seguridad.protector_credenciales_werkzeug import ProtectorCredencialesWerkzeug
 from presentacion.controllers.rutas_web import registrar_rutas
+from presentacion.controllers.servicios_web import ServiciosWeb
 from infraestructura.persistencia.repositories.evaluaciones_coordinador_repositorio import EvaluacionesCoordinadorRepositorio
 from aplicacion.servicios.simulacro_app_service import SimulacroAppService
 from aplicacion.servicios.pregunta_app_service import PreguntaAppService
@@ -62,7 +63,22 @@ def crear_app(servicio_prueba=None):
     imagenes_preguntas = ImagenesPreguntas(Path(__file__).parent / 'datos_privados' / 'preguntas') if motor else None
     diseno = DisenoExamenAppService(DisenoExamenRepositorio(motor)) if motor else None
     calculo = CalculoResultadoAppService(CalculoResultadosRepositorio(motor)) if motor else None
-    registrar_rutas(app, acceso, estudiantes, usuarios, organizacion, panel, simulacros, preguntas, cartillas, resultados, docente, imagenes_preguntas, diseno, calculo)
+    servicios = ServiciosWeb(
+        servicio=acceso,
+        estudiantes_servicio=estudiantes,
+        usuarios_servicio=usuarios,
+        organizacion_servicio=organizacion,
+        panel_servicio=panel,
+        simulacros_servicio=simulacros,
+        preguntas_servicio=preguntas,
+        cartillas_servicio=cartillas,
+        resultados_servicio=resultados,
+        docente_servicio=docente,
+        imagenes_preguntas=imagenes_preguntas,
+        diseno_servicio=diseno,
+        calculo_servicio=calculo,
+    )
+    registrar_rutas(app, servicios)
     return app
 
 
