@@ -11,6 +11,6 @@ test_10_panel_sin_sesion (test_acceso_web.TestAccesoWeb.test_10_panel_sin_sesion
 test_11_coordinador_no_es_director (test_acceso_web.TestAccesoWeb.test_11_coordinador_no_es_director) ... ok
 
 ----------------------------------------------------------------------
-Ran 11 tests in 39.023s
+Ran 11 tests in 53.395s
 
 OK

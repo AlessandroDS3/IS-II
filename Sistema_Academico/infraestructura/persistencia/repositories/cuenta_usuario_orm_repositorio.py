@@ -8,13 +8,13 @@ from sqlalchemy import text
 class CuentaUsuarioORMRepositorio(ICuentaRepositorio):
 
     def guardar(self, cuenta_usuario):
-        pass
+        raise NotImplementedError('La escritura de cuentas se realiza mediante GestionUsuariosRepositorio.')
 
     def buscar_por_id(self, id):
-        pass
+        raise NotImplementedError('Este repositorio de autenticación solo implementa la búsqueda por nombre de usuario.')
 
     def listar(self, filtros):
-        pass
+        raise NotImplementedError('El listado de cuentas se realiza mediante GestionUsuariosRepositorio.listar.')
 
     def buscar_por_nombre(self, nombre):
         with self.session.connect() as conexion:

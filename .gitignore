@@ -15,6 +15,7 @@ Sistema_Academico/mysql_clave.local
 # Datos de ejecución y cobertura
 .coverage
 .coverage.*
+.scannerwork/
 **/reportes/html/
 **/reportes/ejecucion.html
 *.log

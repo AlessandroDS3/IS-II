@@ -8,8 +8,18 @@ test_rechaza_rol_desconocido (test_autorizacion.TestValidacionRoles.test_rechaza
 test_rechaza_roles_duplicados (test_autorizacion.TestValidacionRoles.test_rechaza_roles_duplicados) ... ok
 test_rechaza_roles_vacios (test_autorizacion.TestValidacionRoles.test_rechaza_roles_vacios) ... ok
 test_solo_director_puede_asignar_rol_director (test_autorizacion.TestValidacionRoles.test_solo_director_puede_asignar_rol_director) ... ok
+test_autorizaciones_sin_politica_no_devuelven_aprobacion_silenciosa (test_contratos.TestContratosIdentidadAcceso.test_autorizaciones_sin_politica_no_devuelven_aprobacion_silenciosa) ... ok
+test_interfaces_no_se_pueden_usar_como_implementaciones (test_contratos.TestContratosIdentidadAcceso.test_interfaces_no_se_pueden_usar_como_implementaciones) ... ok
+test_protector_concreto_verifica_claves_y_rechaza_hash_invalido (test_contratos.TestContratosIdentidadAcceso.test_protector_concreto_verifica_claves_y_rechaza_hash_invalido) ... ok
+test_repositorio_rechaza_operaciones_pendientes_antes_de_abrir_conexion (test_contratos.TestContratosIdentidadAcceso.test_repositorio_rechaza_operaciones_pendientes_antes_de_abrir_conexion) ... ok
 test_activar_cuenta (test_cuenta_usuario.TestEstadoCuentaUsuario.test_activar_cuenta) ... ok
+test_asignacion_de_director_requiere_autorizacion_explicita (test_cuenta_usuario.TestEstadoCuentaUsuario.test_asignacion_de_director_requiere_autorizacion_explicita) ... ok
+test_asignar_roles_valida_y_no_comparte_la_lista_recibida (test_cuenta_usuario.TestEstadoCuentaUsuario.test_asignar_roles_valida_y_no_comparte_la_lista_recibida) ... ok
+test_cambiar_credencial_rechaza_valores_vacios_sin_perder_el_hash (test_cuenta_usuario.TestEstadoCuentaUsuario.test_cambiar_credencial_rechaza_valores_vacios_sin_perder_el_hash) ... ok
 test_desactivar_cuenta (test_cuenta_usuario.TestEstadoCuentaUsuario.test_desactivar_cuenta) ... ok
+test_roles_invalidos_o_sin_autorizacion_conservan_roles_previos (test_cuenta_usuario.TestEstadoCuentaUsuario.test_roles_invalidos_o_sin_autorizacion_conservan_roles_previos) ... ok
+test_controlador_autentica_cuenta_persistida_y_rechaza_cuenta_inactiva (test_integracion.TestIntegracionIdentidadAcceso.test_controlador_autentica_cuenta_persistida_y_rechaza_cuenta_inactiva) ... ok
+test_controlador_propaga_operaciones_pendientes_sin_indicar_exito (test_integracion.TestIntegracionIdentidadAcceso.test_controlador_propaga_operaciones_pendientes_sin_indicar_exito) ... ok
 test_crear_y_autenticar_cuenta_persistida (test_integracion.TestIntegracionIdentidadAcceso.test_crear_y_autenticar_cuenta_persistida) ... ok
 test_usuario_duplicado_no_deja_roles_ni_perfiles_adicionales (test_integracion.TestIntegracionIdentidadAcceso.test_usuario_duplicado_no_deja_roles_ni_perfiles_adicionales) ... ok
 test_validacion_invalida_deja_la_base_sin_usuarios (test_integracion.TestIntegracionIdentidadAcceso.test_validacion_invalida_deja_la_base_sin_usuarios) ... ok
@@ -30,8 +40,9 @@ test_crea_usuario_con_datos_normalizados_y_clave_protegida (test_servicios.TestG
 test_estado_invalido_no_se_envia_al_repositorio (test_servicios.TestGestionUsuariosAppService.test_estado_invalido_no_se_envia_al_repositorio) ... ok
 test_rechaza_contrasena_de_siete_caracteres (test_servicios.TestGestionUsuariosAppService.test_rechaza_contrasena_de_siete_caracteres) ... ok
 test_rechaza_username_vacio_sin_persistir (test_servicios.TestGestionUsuariosAppService.test_rechaza_username_vacio_sin_persistir) ... ok
+test_mensaje_se_renderiza_en_output_y_conserva_escape_html (test_vistas.TestVistaUsuarios.test_mensaje_se_renderiza_en_output_y_conserva_escape_html) ... ok
 
 ----------------------------------------------------------------------
-Ran 32 tests in 0.132s
+Ran 43 tests in 0.943s
 
 OK
