@@ -28,7 +28,7 @@
   <div class="sidebar-bottom"><form method="post" action="{{ url_for('salir') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn salir-btn" type="submit">Salir</button></form></div>
 </aside>
 <main class="workspace">
-  {% for categoria, mensaje in get_flashed_messages(with_categories=true) %}<div class="{{ 'mensaje-error' if categoria == 'error' else 'role-note' }}" role="status">{{ mensaje }}</div>{% endfor %}
+  {% for categoria, mensaje in get_flashed_messages(with_categories=true) %}<div class="{{ 'mensaje-error' if categoria == 'error' else 'role-note' }}"><output>{{ mensaje }}</output></div>{% endfor %}
   {% include 'componentes/_contexto_examen.html' %}
   {% block contenido %}{% endblock %}
 </main>

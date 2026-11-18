@@ -20,11 +20,8 @@ class Autorizacion:
         if es_director and not actor_director:
             raise PermissionError('Solo un director puede modificar cuentas de director.')
 
-    def __init__(self):
-        pass
-
     def verificar_permiso(self, cuenta, operacion):
-        pass
+        raise NotImplementedError('La autorización por operación está pendiente de definir; use puede_acceder para verificar roles.')
 
     def verificar_acceso_a_resultado(self, cuenta, estudiante_id):
-        pass
+        raise NotImplementedError('La autorización de resultados requiere verificar la vinculación del estudiante en el servicio de resultados.')

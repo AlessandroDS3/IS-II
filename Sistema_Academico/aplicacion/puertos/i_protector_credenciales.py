@@ -1,12 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-class IProtectorCredenciales:
-    def __init__(self):
-        pass
+from abc import ABC, abstractmethod
 
+
+class IProtectorCredenciales(ABC):
+    @abstractmethod
     def generar_hash(self, contrasena):
-        pass
+        """Protege una contraseña antes de persistirla."""
+        raise NotImplementedError
 
+    @abstractmethod
     def verificar(self, hash_guardado, contrasena):
-        pass
+        """Comprueba una contraseña contra el hash almacenado."""
+        raise NotImplementedError

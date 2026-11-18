@@ -1,12 +1,14 @@
 import unittest
 from unittest.mock import Mock
 from _soporte import BaseSQLite
+from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from aplicacion.puertos.i_protector_credenciales import IProtectorCredenciales
 from aplicacion.servicios.cuenta_usuario_app_service import CuentaUsuarioAppService
 from aplicacion.servicios.gestion_usuarios_app_service import GestionUsuariosAppService
 from infraestructura.persistencia.repositories.cuenta_usuario_orm_repositorio import CuentaUsuarioORMRepositorio
 from infraestructura.persistencia.repositories.gestion_usuarios_repositorio import GestionUsuariosRepositorio
+from presentacion.controllers.cuenta_usuario_controller import CuentaUsuarioController
 
 
 class TestIntegracionIdentidadAcceso(BaseSQLite, unittest.TestCase):
@@ -67,6 +69,28 @@ class TestIntegracionIdentidadAcceso(BaseSQLite, unittest.TestCase):
         self.assertEqual(self.consultar("SELECT * FROM usuarios"), [])
         self.assertEqual(self.consultar("SELECT * FROM usuario_roles"), [])
         self.protector.generar_hash.assert_not_called()
+
+    def test_controlador_autentica_cuenta_persistida_y_rechaza_cuenta_inactiva(self):
+        self.gestion.crear(self.formulario, director=False)
+        controlador = CuentaUsuarioController(self.sesiones)
+        cuenta = controlador.iniciar_sesion(' ana ', 'Clave123!')
+        self.assertEqual(cuenta['usuario'], 'ana')
+        self.assertEqual(cuenta['roles'], ['DOCENTE'])
+        with self.motor.begin() as conexion:
+            conexion.execute(text("UPDATE usuarios SET estado='INACTIVO'"))
+        self.assertIsNone(controlador.iniciar_sesion('ana', 'Clave123!'))
+
+    def test_controlador_propaga_operaciones_pendientes_sin_indicar_exito(self):
+        controlador = CuentaUsuarioController(self.sesiones)
+        for operacion, argumentos in [
+            ('registrar_cuenta', ({},)),
+            ('asignar_roles', (7, ['DOCENTE'])),
+            ('recuperar_acceso', ({},)),
+        ]:
+            metodo = getattr(controlador, operacion)
+            with self.subTest(operacion=operacion), self.assertRaises(NotImplementedError):
+                metodo(*argumentos)
+        self.assertEqual(self.consultar('SELECT * FROM usuarios'), [])
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,24 @@
+﻿key,file,line,rule,verificacion
+b7a0f4cd-4d74-40a4-a94e-d20139dc1945,Sistema_Academico/aplicacion/puertos/i_protector_credenciales.py,5,python:S1186,No abierta en el reanalisis de SonarQube
+1c3c99b0-8133-40cf-953f-39822f2bc14c,Sistema_Academico/aplicacion/puertos/i_protector_credenciales.py,8,python:S1186,No abierta en el reanalisis de SonarQube
+d65a42fc-61ce-4ad9-a3f8-a639c69b0d14,Sistema_Academico/aplicacion/puertos/i_protector_credenciales.py,11,python:S1186,No abierta en el reanalisis de SonarQube
+f3424acb-c41e-4151-a559-52f67c2861c8,Sistema_Academico/dominio/identidad_acceso/autorizacion.py,23,python:S1186,No abierta en el reanalisis de SonarQube
+11739b95-0af9-4c41-9a2b-3ad62044f073,Sistema_Academico/dominio/identidad_acceso/autorizacion.py,26,python:S1186,No abierta en el reanalisis de SonarQube
+b89aef18-e069-45b2-92aa-89ee911c6958,Sistema_Academico/dominio/identidad_acceso/autorizacion.py,29,python:S1186,No abierta en el reanalisis de SonarQube
+0a57189a-8a2f-45d4-b34c-86bc7722718a,Sistema_Academico/dominio/identidad_acceso/cuenta_usuario.py,12,python:S1186,No abierta en el reanalisis de SonarQube
+93026f31-a82e-4c88-a2b0-c5193d6b1ab7,Sistema_Academico/dominio/identidad_acceso/cuenta_usuario.py,21,python:S1186,No abierta en el reanalisis de SonarQube
+17681dda-d539-4357-bc54-5051274e2cbe,Sistema_Academico/dominio/identidad_acceso/i_cuenta_repositorio.py,5,python:S1186,No abierta en el reanalisis de SonarQube
+20537f2a-7801-45b2-94c2-2a7def1db673,Sistema_Academico/dominio/identidad_acceso/i_cuenta_repositorio.py,8,python:S1186,No abierta en el reanalisis de SonarQube
+16916e40-62af-4914-b037-bf640bf65030,Sistema_Academico/dominio/identidad_acceso/i_cuenta_repositorio.py,11,python:S1186,No abierta en el reanalisis de SonarQube
+3c0a6a10-fd18-46bd-9886-0dcf529b0965,Sistema_Academico/dominio/identidad_acceso/i_cuenta_repositorio.py,14,python:S1186,No abierta en el reanalisis de SonarQube
+ddf1f567-e6cf-4960-8bba-ace0e7dbab14,Sistema_Academico/dominio/identidad_acceso/i_cuenta_repositorio.py,17,python:S1186,No abierta en el reanalisis de SonarQube
+5b9eadcd-dfda-4c64-acee-222337d38d23,Sistema_Academico/infraestructura/persistencia/repositories/cuenta_usuario_orm_repositorio.py,10,python:S1186,No abierta en el reanalisis de SonarQube
+5a4d4a7b-41d1-4b44-9c6e-fbe043627f19,Sistema_Academico/infraestructura/persistencia/repositories/cuenta_usuario_orm_repositorio.py,13,python:S1186,No abierta en el reanalisis de SonarQube
+91e97151-be5b-4bb1-be57-f393ead20932,Sistema_Academico/infraestructura/persistencia/repositories/cuenta_usuario_orm_repositorio.py,16,python:S1186,No abierta en el reanalisis de SonarQube
+5d457c8f-a09b-48d6-b79d-ee6bbbc70fad,Sistema_Academico/infraestructura/seguridad/protector_credenciales_werkzeug.py,9,python:S1186,No abierta en el reanalisis de SonarQube
+132bf5c6-b7ed-4e9a-b87d-1f982df678d8,Sistema_Academico/presentacion/controllers/cuenta_usuario_controller.py,5,python:S1186,No abierta en el reanalisis de SonarQube
+263bc766-ae41-4385-9ed7-262ef3f7ed99,Sistema_Academico/presentacion/controllers/cuenta_usuario_controller.py,8,python:S1186,No abierta en el reanalisis de SonarQube
+4eb3f934-fa2b-49f8-8887-990ff7573b5c,Sistema_Academico/presentacion/controllers/cuenta_usuario_controller.py,11,python:S1186,No abierta en el reanalisis de SonarQube
+03ad223e-a04e-43ee-9dbe-7e8970c3157f,Sistema_Academico/presentacion/controllers/cuenta_usuario_controller.py,14,python:S1186,No abierta en el reanalisis de SonarQube
+d7ef4ec9-18b2-41d8-bea3-3a0ebce29cfa,Sistema_Academico/presentacion/controllers/cuenta_usuario_controller.py,17,python:S1186,No abierta en el reanalisis de SonarQube
+5976a9ab-34e6-4d46-b82f-eb8c365894ca,Sistema_Academico/presentacion/vistas/comun/base.html,31,Web:S6819,No abierta en el reanalisis de SonarQube
