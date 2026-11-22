@@ -1,11 +1,13 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Letras de alternativa admitidas en una pregunta."""
+from enum import StrEnum
 
-from enum import Enum
 
-class Letra(Enum):
-    A = 1
-    B = 2
-    C = 3
-    D = 4
-    E = 5
+class Letra(StrEnum):
+    A = 'A'
+    B = 'B'
+    C = 'C'
+    D = 'D'
+    E = 'E'
+
+
+LETRAS = tuple(letra.value for letra in Letra)

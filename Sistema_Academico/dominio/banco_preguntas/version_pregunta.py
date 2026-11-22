@@ -1,15 +1,20 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Versión del contenido de una pregunta; una vez sellada no se modifica."""
+from dataclasses import dataclass, field
+from datetime import datetime
 
+
+@dataclass
 class VersionPregunta:
-    def __init__(self):
-        self.id = None
-        self.numero = None
-        self.tema = None
-        self.enunciado = None
-        self.imagen_opcional = None
-        self.formula_opcional = None
-        self.alternativa_correcta = None
-        self.creada_por = None
-        self.creada_en = None
-        self.sellada = None
+    numero: int
+    enunciado: str
+    alternativa_correcta: str
+    creada_por: int | None = None
+    tema: int | None = None
+    id: int | None = None
+    imagen_opcional: str | None = None
+    formula_opcional: str | None = None
+    creada_en: datetime = field(default_factory=datetime.now)
+    sellada: bool = False
+
+    def sellar(self):
+        self.sellada = True

@@ -1,15 +1,10 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Puerto del banco de preguntas usado por el coordinador."""
+from typing import Protocol
 
-class IPreguntaRepositorio:
-    def __init__(self):
-        pass
 
-    def guardar(self, pregunta):
-        pass
+class IPreguntaRepositorio(Protocol):
+    def preguntas(self, estado, materia, area, eje, examen=0):
+        """Lista preguntas con sus alternativas e imágenes y los catálogos de filtro."""
 
-    def buscar_por_id(self, id):
-        pass
-
-    def listar(self, filtros):
-        pass
+    def revisar(self, pregunta_id, version_id, aprobar, observacion, usuario_id):
+        """Aprueba o devuelve la versión vista de una pregunta en revisión."""

@@ -1,10 +1,9 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Estados de una pregunta del banco (mismos valores que la columna preguntas.estado)."""
+from enum import StrEnum
 
-from enum import Enum
 
-class EstadoPregunta(Enum):
-    BORRADOR = 1
-    EN_REVISION = 2
-    APROBADA = 3
-    INACTIVA = 4
+class EstadoPregunta(StrEnum):
+    BORRADOR = 'BORRADOR'
+    REVISION = 'REVISION'
+    APROBADA = 'APROBADA'
+    INACTIVA = 'INACTIVA'

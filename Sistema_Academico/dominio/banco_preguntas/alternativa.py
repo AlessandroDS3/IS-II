@@ -1,9 +1,12 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Alternativa de respuesta de una versión de pregunta."""
+from dataclasses import dataclass
 
+from dominio.banco_preguntas.letra import Letra
+
+
+@dataclass(frozen=True)
 class Alternativa:
-    def __init__(self):
-        self.letra = None
-        self.texto = None
-        self.imagen_opcional = None
-        self.formula_opcional = None
+    letra: Letra
+    texto: str
+    imagen_opcional: str | None = None
+    formula_opcional: str | None = None
