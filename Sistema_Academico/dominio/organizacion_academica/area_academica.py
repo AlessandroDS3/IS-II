@@ -1,14 +1,9 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Área académica (Ingenierías, Biomédicas, Sociales...)."""
+from dataclasses import dataclass
 
-class AreaAcademica:
-    def __init__(self):
-        self.id = None
-        self.nombre = None
-        self.activa = None
+from dominio.organizacion_academica.registro_activable import RegistroActivable
 
-    def desactivar(self):
-        pass
 
-    def activar(self):
-        pass
+@dataclass
+class AreaAcademica(RegistroActivable):
+    codigo: str = ''

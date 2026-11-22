@@ -1,8 +1,9 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Materia perteneciente a un eje temático."""
+from dataclasses import dataclass
 
-class Materia:
-    def __init__(self):
-        self.id = None
-        self.nombre = None
-        self.activa = None
+from dominio.organizacion_academica.registro_activable import RegistroActivable
+
+
+@dataclass
+class Materia(RegistroActivable):
+    eje_id: int | None = None

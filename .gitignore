@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Entornos virtuales
+.venv*/
+venv/
+
+# Credenciales y configuración local (no versionar)
+*.local
+.env
+.env.*
+
+# Datos privados: cartillas e imágenes cargadas por los usuarios
+Sistema_Academico/datos_privados/
+
+# Herramientas
+.scannerwork/
+.idea/
+.vscode/

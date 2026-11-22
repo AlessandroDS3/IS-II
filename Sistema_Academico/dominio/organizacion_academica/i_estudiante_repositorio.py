@@ -1,15 +1,13 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Puerto de persistencia de estudiantes."""
+from typing import Protocol
 
-class IEstudianteRepositorio:
-    def __init__(self):
-        pass
 
-    def guardar(self, estudiante):
-        pass
-
-    def buscar_por_id(self, id):
-        pass
-
-    def listar(self, filtros):
-        pass
+class IEstudianteRepositorio(Protocol):
+    def guardar(self, estudiante): ...
+    def buscar_por_id(self, id_estudiante): ...
+    def listar(self, filtros): ...
+    def actualizar(self, id_estudiante, datos): ...
+    def cambiar_estado(self, id_estudiante, estado): ...
+    def consultar_asignaciones(self, id_estudiante): ...
+    def cambiar_asignacion(self, id_estudiante, grupo, area, fecha): ...
+    def vincular_cuenta(self, id_estudiante, nombre_usuario): ...
