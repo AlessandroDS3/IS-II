@@ -1,9 +1,14 @@
-"""Casos de uso de creación, consulta y revisión de preguntas docentes."""
-from dominio.banco_preguntas.contenido_docente import validar_contenido
+"""Casos de uso del docente: redactar, consultar y enviar a revisión sus preguntas."""
+from aplicacion.servicios.pregunta_app_service import validar_estado_filtro
+from dominio.banco_preguntas.contenido_docente import ContenidoPregunta, validar_contenido
+from dominio.banco_preguntas.i_autoria_preguntas_repositorio import IAutoriaPreguntasRepositorio
+
+MAX_TEMA = 150
+ACCIONES = ('guardar', 'enviar')
 
 
-class DocenteAppService:
-    def __init__(self, repositorio):
+class AutoriaPreguntasAppService:
+    def __init__(self, repositorio: IAutoriaPreguntasRepositorio):
         self.repositorio = repositorio
 
     def catalogos(self, usuario):
@@ -18,14 +23,12 @@ class DocenteAppService:
             materia = int(materia)
         except (TypeError, ValueError):
             raise ValueError('Selecciona una materia válida.') from None
-        if not nombre or len(nombre) > 150:
+        if not nombre or len(nombre) > MAX_TEMA:
             raise ValueError('El tema debe tener entre 1 y 150 caracteres.')
         self.repositorio.crear_tema(usuario, materia, nombre)
 
     def preguntas(self, usuario, filtros):
-        estado = filtros.get('estado', '')
-        if estado not in ('', 'BORRADOR', 'REVISION', 'APROBADA', 'INACTIVA'):
-            raise ValueError('Estado no válido.')
+        estado = validar_estado_filtro(filtros.get('estado', ''))
         try:
             materia = int(filtros.get('materia') or 0)
             examen = int(filtros.get('examen') or 0)
@@ -38,7 +41,7 @@ class DocenteAppService:
 
     def guardar(self, usuario, datos, archivos, pregunta=None):
         enunciado, respuesta, alternativas = validar_contenido(datos)
-        if datos.get('accion') not in ('guardar', 'enviar'):
+        if datos.get('accion') not in ACCIONES:
             raise ValueError('Selecciona una acción válida.')
         try:
             version = int(datos.get('version') or 0)
@@ -49,11 +52,15 @@ class DocenteAppService:
         except (TypeError, ValueError):
             raise ValueError('Selecciona materia, tema y áreas válidos.') from None
         tema_nuevo = (datos.get('tema_nuevo') or '').strip()
-        if len(tema_nuevo) > 150:
+        if len(tema_nuevo) > MAX_TEMA:
             raise ValueError('El tema admite hasta 150 caracteres.')
         if not pregunta and (not materia or not (tema or tema_nuevo) or not areas or not examen):
             raise ValueError('Selecciona un examen, materia, tema y al menos un área.')
-        return self.repositorio.guardar(usuario, pregunta, version, materia, tema, areas, enunciado, respuesta, alternativas, archivos, datos.get('accion') == 'enviar', examen, tema_nuevo)
+        contenido = ContenidoPregunta(pregunta=pregunta, version=version, materia=materia, tema=tema, areas=areas,
+                                      enunciado=enunciado, respuesta=respuesta, alternativas=alternativas,
+                                      imagenes=archivos, enviar=datos.get('accion') == 'enviar', examen=examen,
+                                      tema_nuevo=tema_nuevo)
+        return self.repositorio.guardar(usuario, contenido)
 
     def estadisticas(self, usuario):
         return self.repositorio.estadisticas(usuario)
