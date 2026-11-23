@@ -21,12 +21,10 @@ class TestContratosIdentidadAcceso(unittest.TestCase):
             with self.subTest(operacion=operacion):
                 self.assertFalse(hasattr(repositorio, operacion))
 
-    def test_autorizaciones_sin_politica_no_devuelven_aprobacion_silenciosa(self):
-        autorizacion = Autorizacion()
-        for operacion in ['verificar_permiso', 'verificar_acceso_a_resultado']:
-            metodo = getattr(autorizacion, operacion)
-            with self.subTest(operacion=operacion), self.assertRaises(NotImplementedError):
-                metodo(None, None)
+    def test_autorizacion_expone_solo_las_politicas_implementadas(self):
+        for operacion in ('verificar_permiso', 'verificar_acceso_a_resultado'):
+            with self.subTest(operacion=operacion):
+                self.assertFalse(hasattr(Autorizacion, operacion))
 
     def test_protector_concreto_verifica_claves_y_rechaza_hash_invalido(self):
         protector = ProtectorCredencialesWerkzeug()
@@ -35,4 +33,9 @@ class TestContratosIdentidadAcceso(unittest.TestCase):
         self.assertNotEqual(protegido, clave)
         self.assertTrue(protector.verificar(protegido, clave))
         self.assertFalse(protector.verificar(protegido, 'incorrecta'))
-        self.assertFalse(protector.verificar(None, clave))
+        for hash_guardado, contrasena in (
+            (None, clave), (123, clave), ('', clave), ('invalido', clave),
+            (protegido, None), (protegido, 123),
+        ):
+            with self.subTest(hash_guardado=hash_guardado, contrasena=contrasena):
+                self.assertFalse(protector.verificar(hash_guardado, contrasena))

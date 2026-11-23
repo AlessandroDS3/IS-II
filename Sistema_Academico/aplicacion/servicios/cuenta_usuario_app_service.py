@@ -1,8 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from aplicacion.puertos.i_protector_credenciales import IProtectorCredenciales
+from dominio.identidad_acceso.i_cuenta_repositorio import ICuentaRepositorio
+
+
 class CuentaUsuarioAppService:
-    def __init__(self, repositorio=None, protector=None):
+    def __init__(self, repositorio: ICuentaRepositorio, protector: IProtectorCredenciales):
         self.repositorio = repositorio
         self.protector = protector
 

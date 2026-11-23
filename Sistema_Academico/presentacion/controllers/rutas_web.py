@@ -311,6 +311,8 @@ class ControladorWeb:
         return redirect(url_for('usuarios'))
 
     def cambiar_roles_usuario(self, id):
+        if not self.servicios.usuarios_servicio:
+            abort(503)
         try:
             self.servicios.usuarios_servicio.cambiar_roles(id, request.form.getlist('roles'), Rol.DIRECTOR in session['roles'], session['usuario_id'])
             flash('Roles actualizados.', 'ok')

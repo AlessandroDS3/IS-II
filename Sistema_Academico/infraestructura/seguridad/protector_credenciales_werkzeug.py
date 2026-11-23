@@ -1,11 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from aplicacion.puertos.i_protector_credenciales import IProtectorCredenciales
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-class ProtectorCredencialesWerkzeug(IProtectorCredenciales):
+class ProtectorCredencialesWerkzeug:
     def generar_hash(self, contrasena):
         return generate_password_hash(contrasena)
 

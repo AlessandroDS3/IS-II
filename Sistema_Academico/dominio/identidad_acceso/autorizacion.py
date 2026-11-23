@@ -26,9 +26,3 @@ class Autorizacion:
     def validar_roles_estudiante(roles, estudiante_vinculado):
         if estudiante_vinculado and roles != [Rol.ESTUDIANTE]:
             raise ValueError('Esta cuenta está vinculada a un estudiante y debe conservar su rol.')
-
-    def verificar_permiso(self, cuenta, operacion):
-        raise NotImplementedError('La autorización por operación está pendiente de definir; use puede_acceder para verificar roles.')
-
-    def verificar_acceso_a_resultado(self, cuenta, estudiante_id):
-        raise NotImplementedError('La autorización de resultados requiere verificar la vinculación del estudiante en el servicio de resultados.')

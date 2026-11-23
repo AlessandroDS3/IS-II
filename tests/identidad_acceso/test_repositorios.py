@@ -12,7 +12,7 @@ class TestCuentaUsuarioRepositorio(unittest.TestCase):
         self.motor = MagicMock(spec=Engine)
         self.conexion = MagicMock(spec=Connection)
         self.motor.connect.return_value.__enter__.return_value = self.conexion
-        self.repositorio = CuentaUsuarioORMRepositorio(self.motor)
+        self.repositorio = CuentaUsuarioORMRepositorio(motor=self.motor)
         self.fila = {
             "id_usuario": 7, "username": "ana", "nombres": "Ana",
             "password_hash": "hash-seguro", "estado": "ACTIVO"

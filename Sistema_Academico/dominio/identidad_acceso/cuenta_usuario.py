@@ -1,16 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from dataclasses import dataclass, field
 from .autorizacion import Autorizacion
 
 
+@dataclass
 class CuentaUsuario:
-    def __init__(self):
-        self.id = None
-        self.nombre_usuario = None
-        self.password_hash = None
-        self.roles = None
-        self.activa = None
+    nombre_usuario: str
+    password_hash: str = field(repr=False)
+    roles: list = field(default_factory=list)
+    activa: bool = True
+    id: int | None = None
 
     def asignar_roles(self, roles, director=False):
         nuevos_roles = list(roles)

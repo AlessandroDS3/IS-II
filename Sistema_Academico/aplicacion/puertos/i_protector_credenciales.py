@@ -1,16 +1,10 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
-from abc import ABC, abstractmethod
+"""Puerto para generar y verificar hashes de contraseñas."""
+from typing import Protocol
 
 
-class IProtectorCredenciales(ABC):
-    @abstractmethod
-    def generar_hash(self, contrasena):
+class IProtectorCredenciales(Protocol):
+    def generar_hash(self, contrasena) -> str:
         """Protege una contraseña antes de persistirla."""
-        raise NotImplementedError
 
-    @abstractmethod
-    def verificar(self, hash_guardado, contrasena):
+    def verificar(self, hash_guardado, contrasena) -> bool:
         """Comprueba una contraseña contra el hash almacenado."""
-        raise NotImplementedError

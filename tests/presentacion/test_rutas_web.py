@@ -84,6 +84,14 @@ class TestRutasWeb(unittest.TestCase):
         self.servicios.servicio = None
         self.assertEqual(self.cliente.post('/').status_code, 503)
 
+    def test_cambiar_roles_sin_servicio_responde_503_y_conserva_la_sesion(self):
+        self.autenticar()
+        respuesta = self.cliente.post('/coordinador/usuarios/8/roles',
+                                      data={'roles': ['DOCENTE']})
+        self.assertEqual(respuesta.status_code, 503)
+        with self.cliente.session_transaction() as sesion:
+            self.assertEqual(sesion['usuario_id'], 7)
+
     def test_cinco_fallos_bloquean_la_siguiente_peticion_sin_consultar_cuenta(self):
         self.acceso.iniciar_sesion.return_value = None
         for _ in range(5):
