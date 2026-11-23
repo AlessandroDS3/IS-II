@@ -7,15 +7,6 @@ from sqlalchemy import text
 
 class CuentaUsuarioORMRepositorio(ICuentaRepositorio):
 
-    def guardar(self, cuenta_usuario):
-        raise NotImplementedError('La escritura de cuentas se realiza mediante GestionUsuariosRepositorio.')
-
-    def buscar_por_id(self, id):
-        raise NotImplementedError('Este repositorio de autenticación solo implementa la búsqueda por nombre de usuario.')
-
-    def listar(self, filtros):
-        raise NotImplementedError('El listado de cuentas se realiza mediante GestionUsuariosRepositorio.listar.')
-
     def buscar_por_nombre(self, nombre):
         with self.session.connect() as conexion:
             usuario = conexion.execute(text("SELECT id_usuario, username, password_hash, nombres, estado FROM usuarios WHERE username = :nombre"), {"nombre": nombre}).mappings().first()

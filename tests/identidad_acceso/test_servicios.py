@@ -1,11 +1,11 @@
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, create_autospec
 import _soporte  # Configura los imports de la aplicación.
 from aplicacion.puertos.i_protector_credenciales import IProtectorCredenciales
 from aplicacion.servicios.cuenta_usuario_app_service import CuentaUsuarioAppService
 from aplicacion.servicios.gestion_usuarios_app_service import GestionUsuariosAppService
 from dominio.identidad_acceso.i_cuenta_repositorio import ICuentaRepositorio
-from infraestructura.persistencia.repositories.gestion_usuarios_repositorio import GestionUsuariosRepositorio
+from dominio.identidad_acceso.i_gestion_usuarios_repositorio import IGestionUsuariosRepositorio
 
 
 class TestCuentaUsuarioAppService(unittest.TestCase):
@@ -83,7 +83,8 @@ class TestCuentaUsuarioAppService(unittest.TestCase):
 class TestGestionUsuariosAppService(unittest.TestCase):
 
     def setUp(self):
-        self.repositorio = Mock(spec_set=GestionUsuariosRepositorio)
+        self.repositorio = create_autospec(
+            IGestionUsuariosRepositorio, instance=True, spec_set=True)
         self.protector = Mock(spec_set=IProtectorCredenciales)
         self.protector.generar_hash.return_value = "hash-seguro"
         self.servicio = GestionUsuariosAppService(self.repositorio, self.protector)

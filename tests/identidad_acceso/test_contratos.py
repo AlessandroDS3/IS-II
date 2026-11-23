@@ -15,12 +15,11 @@ class TestContratosIdentidadAcceso(unittest.TestCase):
             with self.subTest(contrato=contrato.__name__), self.assertRaises(TypeError):
                 contrato()
 
-    def test_repositorio_rechaza_operaciones_pendientes_antes_de_abrir_conexion(self):
+    def test_repositorio_de_acceso_no_ofrece_operaciones_de_administracion(self):
         repositorio = CuentaUsuarioORMRepositorio(None)
-        for operacion, argumento in [('guardar', object()), ('buscar_por_id', 7), ('listar', {})]:
-            metodo = getattr(repositorio, operacion)
-            with self.subTest(operacion=operacion), self.assertRaises(NotImplementedError):
-                metodo(argumento)
+        for operacion in ('guardar', 'buscar_por_id', 'listar'):
+            with self.subTest(operacion=operacion):
+                self.assertFalse(hasattr(repositorio, operacion))
 
     def test_autorizaciones_sin_politica_no_devuelven_aprobacion_silenciosa(self):
         autorizacion = Autorizacion()

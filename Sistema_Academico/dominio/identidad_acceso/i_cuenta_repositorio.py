@@ -1,22 +1,7 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
-from abc import ABC, abstractmethod
+"""Puerto de consulta de cuentas para autenticación."""
+from typing import Protocol
 
 
-class ICuentaRepositorio(ABC):
-    @abstractmethod
-    def guardar(self, cuenta_usuario):
-        raise NotImplementedError
-
-    @abstractmethod
-    def buscar_por_id(self, id):
-        raise NotImplementedError
-
-    @abstractmethod
-    def listar(self, filtros):
-        raise NotImplementedError
-
-    @abstractmethod
+class ICuentaRepositorio(Protocol):
     def buscar_por_nombre(self, nombre):
-        raise NotImplementedError
+        """Devuelve los datos de acceso de la cuenta, o None si no existe."""
