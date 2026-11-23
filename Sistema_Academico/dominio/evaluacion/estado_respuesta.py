@@ -1,10 +1,8 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Resolución manual de una respuesta leída (columna correcciones_manual.resolucion)."""
+from enum import StrEnum
 
-from enum import Enum
 
-class EstadoRespuesta(Enum):
-    PENDIENTE_REVISION = 1
-    UNICA_CONFIRMADA = 2
-    BLANCO_CONFIRMADO = 3
-    MULTIPLE_CONFIRMADA = 4
+class EstadoRespuesta(StrEnum):
+    MARCA_UNICA = 'MARCA_UNICA'
+    BLANCO = 'BLANCO'
+    MULTIPLE_CONFIRMADA = 'MULTIPLE_CONFIRMADA'

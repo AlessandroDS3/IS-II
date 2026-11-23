@@ -1,15 +1,19 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Cartilla física recibida dentro de una participación."""
+from dataclasses import dataclass, field
+from datetime import datetime
 
+
+@dataclass
 class Cartilla:
-    def __init__(self):
-        self.id = None
-        self.cuadernillo_id = None
-        self.imagen = None
-        self.recibida_en = None
-        self.recibida_por = None
-        self.motivo_reemplazo_opcional = None
-        self.motivo_recepcion_tardia_opcional = None
-        self.cartilla_origen_id_opcional = None
-        self.invalidada_por_rectificacion_id_opcional = None
-        self.lectura_confirmada_id_opcional = None
+    numero_recepcion: int
+    cuadernillo_id: int
+    imagen: str
+    recibida_por: int | None = None
+    recibida_en: datetime = field(default_factory=datetime.now)
+    vigente: bool = True
+    motivo_reemplazo_opcional: str | None = None
+    motivo_recepcion_tardia_opcional: str | None = None
+    cartilla_origen_id_opcional: int | None = None
+    invalidada_por_rectificacion_id_opcional: int | None = None
+    lectura_confirmada_id_opcional: int | None = None
+    id: int | None = None

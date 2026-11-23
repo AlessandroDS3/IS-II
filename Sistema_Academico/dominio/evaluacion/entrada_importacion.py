@@ -1,18 +1,22 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Página recibida en una importación de cartillas, antes de registrarse como cartilla."""
+from dataclasses import dataclass
+from datetime import datetime
 
+from dominio.evaluacion.estado_entrada import EstadoEntrada
+
+
+@dataclass
 class EntradaImportacion:
-    def __init__(self):
-        self.id = None
-        self.archivo_fuente = None
-        self.pagina_opcional = None
-        self.huella_contenido = None
-        self.estado = None
-        self.error_opcional = None
-        self.motivo_resolucion_opcional = None
-        self.resuelta_por_opcional = None
-        self.resuelta_en_opcional = None
-        self.sustituida_por_entrada_id_opcional = None
-        self.estudiante_identificado_id_opcional = None
-        self.cuadernillo_identificado_id_opcional = None
-        self.cartilla_registrada_id_opcional = None
+    archivo_fuente: str
+    huella_contenido: str
+    pagina_opcional: int | None = None
+    estado: EstadoEntrada = EstadoEntrada.PENDIENTE
+    error_opcional: str | None = None
+    motivo_resolucion_opcional: str | None = None
+    resuelta_por_opcional: int | None = None
+    resuelta_en_opcional: datetime | None = None
+    sustituida_por_entrada_id_opcional: int | None = None
+    estudiante_identificado_id_opcional: int | None = None
+    cuadernillo_identificado_id_opcional: int | None = None
+    cartilla_registrada_id_opcional: int | None = None
+    id: int | None = None

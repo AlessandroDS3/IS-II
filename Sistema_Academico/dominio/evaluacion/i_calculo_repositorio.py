@@ -1,18 +1,7 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Puerto de persistencia del cálculo de resultados."""
+from typing import Protocol
 
-class ICalculoRepositorio:
-    def __init__(self):
-        pass
 
-    def guardar(self, calculo_resultado):
-        pass
-
-    def buscar_por_id(self, id):
-        pass
-
-    def listar(self, filtros):
-        pass
-
-    def registrar_nueva_version(self, calculo_resultado):
-        pass
+class ICalculoRepositorio(Protocol):
+    def calcular(self, examen, usuario):
+        """Calcula los resultados de las cartillas validadas que aún no tienen resultado; devuelve la cantidad."""

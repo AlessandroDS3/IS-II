@@ -1,10 +1,8 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Resultado de un procesamiento de cartilla (columna procesamiento_cartilla.resultado)."""
+from enum import StrEnum
 
-from enum import Enum
 
-class EstadoLectura(Enum):
-    PENDIENTE_REVISION = 1
-    CONFIRMADA = 2
-    ESPERA_REEMPLAZO_LEGIBLE = 3
-    OBSOLETA = 4
+class EstadoLectura(StrEnum):
+    EXITOSO = 'EXITOSO'
+    ERROR = 'ERROR'
+    REQUIERE_REVISION = 'REQUIERE_REVISION'

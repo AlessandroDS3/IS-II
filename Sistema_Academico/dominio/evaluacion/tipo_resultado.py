@@ -1,9 +1,8 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Tipo de respuesta usado al calificar (columna detalle_resultado.tipo_respuesta)."""
+from enum import StrEnum
 
-from enum import Enum
 
-class TipoResultado(Enum):
-    CORRECTA = 1
-    INCORRECTA = 2
-    BLANCO = 3
+class TipoResultado(StrEnum):
+    UNICA = 'UNICA'
+    BLANCO = 'BLANCO'
+    MULTIPLE_CONFIRMADA = 'MULTIPLE_CONFIRMADA'

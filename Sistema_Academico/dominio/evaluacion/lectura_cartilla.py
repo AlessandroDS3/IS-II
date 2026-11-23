@@ -1,14 +1,19 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Procesamiento (lectura OMR o manual) de una cartilla."""
+from dataclasses import dataclass, field
+from datetime import datetime
 
+from dominio.evaluacion.estado_lectura import EstadoLectura
+
+
+@dataclass
 class LecturaCartilla:
-    def __init__(self):
-        self.id = None
-        self.lectura_origen_id_opcional = None
-        self.version_lector = None
-        self.configuracion_lector = None
-        self.procesada_en = None
-        self.responsable_id = None
-        self.estado = None
-        self.confirmada_por_opcional = None
-        self.confirmada_en_opcional = None
+    cartilla_id: int
+    version_lector: str | None = None
+    configuracion_lector: dict | None = None
+    responsable_id: int | None = None
+    estado: EstadoLectura = EstadoLectura.REQUIERE_REVISION
+    procesada_en: datetime = field(default_factory=datetime.now)
+    lectura_origen_id_opcional: int | None = None
+    confirmada_por_opcional: int | None = None
+    confirmada_en_opcional: datetime | None = None
+    id: int | None = None
