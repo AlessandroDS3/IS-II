@@ -1,10 +1,24 @@
 """Almacenamiento transaccional de configuración y revisiones de clave."""
+from dataclasses import dataclass, field
+
 from sqlalchemy import bindparam, text
-from dominio.diseno_evaluaciones.validador_examen import ValidadorExamen
+
 from dominio.diseno_evaluaciones.examen import Examen
+from dominio.diseno_evaluaciones.validador_examen import ValidadorExamen
+
+
+@dataclass(frozen=True)
+class ConsultaConfiguracion:
+    examenes: list
+    actual: dict | None
+    preguntas: list = field(default_factory=list)
+    versiones: list = field(default_factory=list)
+    claves: list = field(default_factory=list)
 
 
 class DisenoExamenRepositorio:
+    """Implementa IDisenoExamenRepositorio."""
+
     def __init__(self, motor):
         self.motor = motor
 
@@ -19,17 +33,19 @@ class DisenoExamenRepositorio:
         with self.motor.connect() as c:
             examenes = c.execute(text('SELECT e.id_examen,e.nombre,e.estado,e.puntaje_total,a.nombre area FROM examenes e JOIN areas a ON a.id_area=e.id_area ORDER BY e.id_examen DESC')).mappings().all()
             actual = next((x for x in examenes if x['id_examen'] == examen), None)
+            if not actual:
+                return ConsultaConfiguracion(examenes, None)
             preguntas = c.execute(text("""SELECT pv.id_version,pv.enunciado,p.id_pregunta,p.id_examen_destino,m.id_materia,m.nombre materia,et.nombre eje
                 FROM examenes ex JOIN pregunta_areas pa ON pa.id_area=ex.id_area JOIN preguntas p ON p.id_pregunta=pa.id_pregunta AND p.estado='APROBADA'
                 JOIN pregunta_versiones pv ON pv.id_pregunta=p.id_pregunta AND pv.estado='ACTIVA' AND pv.sellada=1
                 JOIN materias m ON m.id_materia=p.id_materia JOIN ejes_tematicos et ON et.id_eje=m.id_eje
-                WHERE ex.id_examen=:id ORDER BY et.nombre,m.nombre,p.id_pregunta"""), {'id': examen}).mappings().all() if actual else []
-            versiones = c.execute(text('SELECT id_version,codigo_version FROM versiones_examen WHERE id_examen=:id ORDER BY codigo_version'), {'id': examen}).mappings().all() if actual else []
+                WHERE ex.id_examen=:id ORDER BY et.nombre,m.nombre,p.id_pregunta"""), {'id': examen}).mappings().all()
+            versiones = c.execute(text('SELECT id_version,codigo_version FROM versiones_examen WHERE id_examen=:id ORDER BY codigo_version'), {'id': examen}).mappings().all()
             claves = c.execute(text("""SELECT v.id_version,v.codigo_version,ep.numero_pregunta,ep.id_version_pregunta,pv.enunciado,COALESCE((SELECT pr.respuesta_correcta FROM plantilla_respuestas pr JOIN revisiones_clave rc ON rc.id_revision_clave=pr.id_revision_clave WHERE rc.id_version_examen=v.id_version AND rc.estado='CONFIRMADA' AND pr.numero_pregunta=ep.numero_pregunta ORDER BY rc.numero_revision DESC LIMIT 1),pv.respuesta_correcta) sugerida,
                 (SELECT MAX(rc.numero_revision) FROM revisiones_clave rc WHERE rc.id_version_examen=v.id_version AND rc.estado='CONFIRMADA') revision
                 FROM versiones_examen v JOIN examen_preguntas ep ON ep.id_version_examen=v.id_version
-                JOIN pregunta_versiones pv ON pv.id_version=ep.id_version_pregunta WHERE v.id_examen=:id ORDER BY v.codigo_version,ep.numero_pregunta"""), {'id': examen}).mappings().all() if actual else []
-            return examenes, actual, preguntas, versiones, claves
+                JOIN pregunta_versiones pv ON pv.id_version=ep.id_version_pregunta WHERE v.id_examen=:id ORDER BY v.codigo_version,ep.numero_pregunta"""), {'id': examen}).mappings().all()
+            return ConsultaConfiguracion(examenes, actual, preguntas, versiones, claves)
 
     def configurar(self, examen, ids, puntajes, versiones, penalizacion, usuario):
         with self.motor.begin() as c:
@@ -45,17 +61,20 @@ class DisenoExamenRepositorio:
             elegidas = c.execute(consulta, {'ids': ids, 'area': ex['id_area']}).mappings().all()
             por_id, totales, pesos = ValidadorExamen.calcular_distribucion(ids, elegidas, puntajes, ex['puntaje_total'])
             for eje, peso in pesos.items():
-                c.execute(text('INSERT INTO examen_ejes(id_examen,id_eje,peso_porcentaje) VALUES (:examen,:eje,:peso)'), {'examen': examen,'eje': eje,'peso': peso})
+                c.execute(text('INSERT INTO examen_ejes(id_examen,id_eje,peso_porcentaje) VALUES (:examen,:eje,:peso)'), {'examen': examen, 'eje': eje, 'peso': peso})
             for orden, (materia, cantidad) in enumerate(totales.items(), 1):
-                c.execute(text('INSERT INTO distribucion_examen(id_examen,id_materia,orden,cantidad_preguntas,puntaje_por_pregunta) VALUES (:examen,:materia,:orden,:cantidad,:puntaje)'), {'examen': examen,'materia': materia,'orden': orden,'cantidad': cantidad,'puntaje': puntajes[materia]})
+                c.execute(text('INSERT INTO distribucion_examen(id_examen,id_materia,orden,cantidad_preguntas,puntaje_por_pregunta) VALUES (:examen,:materia,:orden,:cantidad,:puntaje)'), {'examen': examen, 'materia': materia, 'orden': orden, 'cantidad': cantidad, 'puntaje': puntajes[materia]})
             for codigo in versiones:
-                vid = c.execute(text('INSERT INTO versiones_examen(id_examen,codigo_version) VALUES (:examen,:codigo)'), {'examen': examen,'codigo': codigo}).lastrowid
-                orden_ids = Examen.ordenar_versiones(ids, codigo)
-                for numero, id in enumerate(orden_ids, 1):
-                    c.execute(text('INSERT INTO examen_preguntas(id_version_examen,id_version_pregunta,numero_pregunta,puntaje) VALUES (:version,:pregunta,:numero,:puntaje)'), {'version': vid,'pregunta': id,'numero': numero,'puntaje': puntajes[por_id[id]['id_materia']]})
-            c.execute(text("INSERT INTO configuracion_puntaje(id_examen,numero_revision,estado,creada_por,motivo,puntaje_incorrecta,usa_penalizacion) VALUES (:examen,1,'CONFIRMADA',:usuario,'Configuración inicial',:penalizacion,:usa)"), {'examen': examen,'usuario': usuario,'penalizacion': penalizacion,'usa': penalizacion < 0})
+                self._crear_version(c, examen, codigo, ids, puntajes, por_id)
+            c.execute(text("INSERT INTO configuracion_puntaje(id_examen,numero_revision,estado,creada_por,motivo,puntaje_incorrecta,usa_penalizacion) VALUES (:examen,1,'CONFIRMADA',:usuario,'Configuración inicial',:penalizacion,:usa)"), {'examen': examen, 'usuario': usuario, 'penalizacion': penalizacion, 'usa': penalizacion < 0})
             c.execute(text("UPDATE examenes SET estado='APROBADO' WHERE id_examen=:id"), {'id': examen})
-            c.execute(text("INSERT INTO historial_configuracion_examen(id_examen,usuario_modifico,descripcion_cambio) VALUES (:id,:usuario,'Configuración y aprobación inicial')"), {'id': examen,'usuario': usuario})
+            c.execute(text("INSERT INTO historial_configuracion_examen(id_examen,usuario_modifico,descripcion_cambio) VALUES (:id,:usuario,'Configuración y aprobación inicial')"), {'id': examen, 'usuario': usuario})
+
+    @staticmethod
+    def _crear_version(c, examen, codigo, ids, puntajes, por_id):
+        version = c.execute(text('INSERT INTO versiones_examen(id_examen,codigo_version) VALUES (:examen,:codigo)'), {'examen': examen, 'codigo': codigo}).lastrowid
+        for numero, id_version_pregunta in enumerate(Examen.ordenar_versiones(ids, codigo), 1):
+            c.execute(text('INSERT INTO examen_preguntas(id_version_examen,id_version_pregunta,numero_pregunta,puntaje) VALUES (:version,:pregunta,:numero,:puntaje)'), {'version': version, 'pregunta': id_version_pregunta, 'numero': numero, 'puntaje': puntajes[por_id[id_version_pregunta]['id_materia']]})
 
     def crear_clave(self, version, respuestas, motivo, usuario):
         with self.motor.begin() as c:
@@ -67,7 +86,7 @@ class DisenoExamenRepositorio:
             filas = c.execute(text('SELECT numero_pregunta,id_version_pregunta FROM examen_preguntas WHERE id_version_examen=:id ORDER BY numero_pregunta'), {'id': version}).mappings().all()
             ValidadorExamen.validar_clave(respuestas, (x['numero_pregunta'] for x in filas))
             numero = c.execute(text('SELECT COALESCE(MAX(numero_revision),0)+1 FROM revisiones_clave WHERE id_version_examen=:id'), {'id': version}).scalar_one()
-            revision = c.execute(text('INSERT INTO revisiones_clave(id_version_examen,numero_revision,creada_por,motivo) VALUES (:version,:numero,:usuario,:motivo)'), {'version': version,'numero': numero,'usuario': usuario,'motivo': motivo}).lastrowid
+            revision = c.execute(text('INSERT INTO revisiones_clave(id_version_examen,numero_revision,creada_por,motivo) VALUES (:version,:numero,:usuario,:motivo)'), {'version': version, 'numero': numero, 'usuario': usuario, 'motivo': motivo}).lastrowid
             for f in filas:
-                c.execute(text('INSERT INTO plantilla_respuestas(id_revision_clave,id_version_examen,numero_pregunta,id_version_pregunta,respuesta_correcta) VALUES (:revision,:version,:numero,:pregunta,:respuesta)'), {'revision': revision,'version': version,'numero': f['numero_pregunta'],'pregunta': f['id_version_pregunta'],'respuesta': respuestas[f['numero_pregunta']]})
+                c.execute(text('INSERT INTO plantilla_respuestas(id_revision_clave,id_version_examen,numero_pregunta,id_version_pregunta,respuesta_correcta) VALUES (:revision,:version,:numero,:pregunta,:respuesta)'), {'revision': revision, 'version': version, 'numero': f['numero_pregunta'], 'pregunta': f['id_version_pregunta'], 'respuesta': respuestas[f['numero_pregunta']]})
             c.execute(text("UPDATE revisiones_clave SET estado='CONFIRMADA' WHERE id_revision_clave=:id"), {'id': revision})

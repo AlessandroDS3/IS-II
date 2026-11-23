@@ -1,18 +1,19 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Puerto de persistencia de exámenes (contexto, resumen y habilitación de preguntas)."""
+from typing import Protocol
 
-class IExamenRepositorio:
-    def __init__(self):
-        pass
 
-    def guardar(self, examen):
-        pass
+class IExamenRepositorio(Protocol):
+    def contexto_examen(self, examen):
+        """Datos del examen y de las áreas de su simulacro, o None."""
 
-    def buscar_por_id(self, id):
-        pass
+    def abrir_aplicacion(self, simulacro, examen=0):
+        """Contexto del examen indicado (o del primero) de un simulacro."""
 
-    def listar(self, filtros):
-        pass
+    def resumen_examen(self, examen):
+        """Contadores de avance del examen."""
 
-    def buscar_por_simulacro_y_area(self, simulacro_id, area_id):
-        pass
+    def crear_examen(self, datos, usuario_id):
+        """Registra un examen para un área de un simulacro abierto."""
+
+    def habilitar_preguntas(self, examen, habilitar):
+        """Abre o cierra la recepción de preguntas del examen."""

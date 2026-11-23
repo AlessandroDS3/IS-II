@@ -1,9 +1,8 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Estados de un simulacro (mismos valores que la columna simulacros.estado)."""
+from enum import StrEnum
 
-from enum import Enum
 
-class EstadoSimulacro(Enum):
-    BORRADOR = 1
-    CONFIRMADO = 2
-    DESACTIVADO = 3
+class EstadoSimulacro(StrEnum):
+    ABIERTO = 'ABIERTO'
+    CERRADO = 'CERRADO'
+    INACTIVO = 'INACTIVO'
