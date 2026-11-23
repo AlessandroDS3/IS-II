@@ -1,7 +1,6 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
+"""Roles del sistema (mismos nombres que la tabla roles)."""
 from enum import StrEnum
+
 
 class Rol(StrEnum):
     ESTUDIANTE = 'ESTUDIANTE'
@@ -11,11 +10,4 @@ class Rol(StrEnum):
 
 
 ROLES_CON_PANEL = (Rol.COORDINADOR, Rol.DIRECTOR, Rol.ESTUDIANTE, Rol.DOCENTE)
-ROLES_CON_PERFIL = (
-    (Rol.DOCENTE, 'docentes'), (Rol.COORDINADOR, 'coordinadores'),
-    (Rol.DIRECTOR, 'directores'),
-)
-
-
-def roles_asignables(es_director):
-    return tuple(rol for rol in Rol if es_director or rol != Rol.DIRECTOR)
+ROLES_CON_PERFIL = ((Rol.DOCENTE, 'docentes'), (Rol.COORDINADOR, 'coordinadores'), (Rol.DIRECTOR, 'directores'))

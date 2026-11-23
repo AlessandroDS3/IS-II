@@ -1,6 +1,5 @@
-"""Límite por usuario y proceso: los fallos se pierden al reiniciar la aplicación."""
+"""Bloqueo temporal tras varios intentos de inicio de sesión fallidos para un mismo usuario."""
 import time
-from threading import Lock
 
 
 class LimitadorIntentos:
@@ -9,27 +8,18 @@ class LimitadorIntentos:
         self.ventana = ventana_segundos
         self.reloj = reloj
         self._fallos = {}
-        self._bloqueo = Lock()
 
     def _recientes(self, usuario):
         limite = self.reloj() - self.ventana
         fallos = [t for t in self._fallos.get(usuario, []) if t > limite]
-        if fallos:
-            self._fallos[usuario] = fallos
-        else:
-            self._fallos.pop(usuario, None)
+        self._fallos[usuario] = fallos
         return fallos
 
     def bloqueado(self, usuario):
-        with self._bloqueo:
-            return len(self._recientes(usuario)) >= self.max_intentos
+        return len(self._recientes(usuario)) >= self.max_intentos
 
     def registrar_fallo(self, usuario):
-        with self._bloqueo:
-            fallos = self._recientes(usuario)
-            fallos.append(self.reloj())
-            self._fallos[usuario] = fallos[-self.max_intentos:]
+        self._recientes(usuario).append(self.reloj())
 
     def reiniciar(self, usuario):
-        with self._bloqueo:
-            self._fallos.pop(usuario, None)
+        self._fallos.pop(usuario, None)

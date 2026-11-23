@@ -4,7 +4,7 @@ from typing import Protocol
 
 class IProtectorCredenciales(Protocol):
     def generar_hash(self, contrasena) -> str:
-        """Protege una contraseña antes de persistirla."""
+        """Hash seguro de la contraseña."""
 
     def verificar(self, hash_guardado, contrasena) -> bool:
-        """Comprueba una contraseña contra el hash almacenado."""
+        """True si la contraseña corresponde al hash guardado."""

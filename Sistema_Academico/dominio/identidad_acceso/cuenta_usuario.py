@@ -1,22 +1,20 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
+"""Cuenta de acceso de un usuario del sistema."""
 from dataclasses import dataclass, field
-from .autorizacion import Autorizacion
+
+from dominio.identidad_acceso.autorizacion import Autorizacion
 
 
 @dataclass
 class CuentaUsuario:
     nombre_usuario: str
-    password_hash: str = field(repr=False)
+    password_hash: str
     roles: list = field(default_factory=list)
     activa: bool = True
     id: int | None = None
 
-    def asignar_roles(self, roles, director=False):
-        nuevos_roles = list(roles)
-        Autorizacion.validar_roles(nuevos_roles, director)
-        self.roles = nuevos_roles
+    def asignar_roles(self, roles, actor_es_director=False):
+        Autorizacion.validar_roles(roles, actor_es_director)
+        self.roles = list(roles)
 
     def desactivar(self):
         self.activa = False
@@ -25,6 +23,6 @@ class CuentaUsuario:
         self.activa = True
 
     def cambiar_credencial(self, nuevo_hash):
-        if not isinstance(nuevo_hash, str) or not nuevo_hash.strip():
-            raise ValueError('La credencial protegida no puede estar vacía.')
+        if not nuevo_hash:
+            raise ValueError('La credencial no puede estar vacía.')
         self.password_hash = nuevo_hash

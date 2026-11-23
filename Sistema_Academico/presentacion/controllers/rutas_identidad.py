@@ -3,11 +3,11 @@ from flask import abort, current_app, flash, redirect, render_template, request,
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from dominio.identidad_acceso.limitador_intentos import LimitadorIntentos
-from dominio.identidad_acceso.rol import ROLES_CON_PANEL, Rol, roles_asignables
+from dominio.identidad_acceso.rol import ROLES_CON_PANEL, Rol
 from presentacion.controllers.soporte_web import ROL_COORDINADOR, Ruta, pagina, registrar_vistas
 
 PLANTILLA_LOGIN = 'comun/login.html'
-COORDINADOR = Rol.COORDINADOR
+COORDINADOR = 'COORDINADOR'
 
 
 def _es_director():
@@ -89,9 +89,7 @@ class RutasIdentidad:
         except SQLAlchemyError:
             current_app.logger.exception('Error al consultar usuarios')
             abort(503)
-        return pagina('coordinador/usuarios.html', ROL_COORDINADOR, usuarios=lista,
-                      es_director=es_director, roles_disponibles=roles_asignables(es_director),
-                      rol_director=Rol.DIRECTOR)
+        return pagina('coordinador/usuarios.html', ROL_COORDINADOR, usuarios=lista, es_director=es_director)
 
     def estado_usuario(self, id):
         try:
@@ -114,6 +112,4 @@ class RutasIdentidad:
 
 
 def registrar(app, proteger, servicios):
-    rutas = RutasIdentidad(servicios)
-    app.extensions['limitador_acceso'] = rutas.limitador
-    registrar_vistas(app, proteger, rutas.rutas())
+    registrar_vistas(app, proteger, RutasIdentidad(servicios).rutas())
