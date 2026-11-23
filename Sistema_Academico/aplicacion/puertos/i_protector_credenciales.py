@@ -1,12 +1,10 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Puerto para generar y verificar hashes de contraseñas."""
+from typing import Protocol
 
-class IProtectorCredenciales:
-    def __init__(self):
-        pass
 
-    def generar_hash(self, contrasena):
-        pass
+class IProtectorCredenciales(Protocol):
+    def generar_hash(self, contrasena) -> str:
+        """Protege una contraseña antes de persistirla."""
 
-    def verificar(self, hash_guardado, contrasena):
-        pass
+    def verificar(self, hash_guardado, contrasena) -> bool:
+        """Comprueba una contraseña contra el hash almacenado."""

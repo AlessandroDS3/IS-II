@@ -1,18 +1,7 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Puerto de consulta de cuentas para autenticación."""
+from typing import Protocol
 
-class ICuentaRepositorio:
-    def __init__(self):
-        pass
 
-    def guardar(self, cuenta_usuario):
-        pass
-
-    def buscar_por_id(self, id):
-        pass
-
-    def listar(self, filtros):
-        pass
-
+class ICuentaRepositorio(Protocol):
     def buscar_por_nombre(self, nombre):
-        pass
+        """Devuelve los datos de acceso de la cuenta, o None si no existe."""

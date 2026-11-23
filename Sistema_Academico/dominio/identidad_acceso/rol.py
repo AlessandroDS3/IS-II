@@ -1,10 +1,21 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from enum import Enum
+from enum import StrEnum
 
-class Rol(Enum):
-    ESTUDIANTE = 1
-    DOCENTE = 2
-    COORDINADOR = 3
-    DIRECTOR = 4
+class Rol(StrEnum):
+    ESTUDIANTE = 'ESTUDIANTE'
+    DOCENTE = 'DOCENTE'
+    COORDINADOR = 'COORDINADOR'
+    DIRECTOR = 'DIRECTOR'
+
+
+ROLES_CON_PANEL = (Rol.COORDINADOR, Rol.DIRECTOR, Rol.ESTUDIANTE, Rol.DOCENTE)
+ROLES_CON_PERFIL = (
+    (Rol.DOCENTE, 'docentes'), (Rol.COORDINADOR, 'coordinadores'),
+    (Rol.DIRECTOR, 'directores'),
+)
+
+
+def roles_asignables(es_director):
+    return tuple(rol for rol in Rol if es_director or rol != Rol.DIRECTOR)

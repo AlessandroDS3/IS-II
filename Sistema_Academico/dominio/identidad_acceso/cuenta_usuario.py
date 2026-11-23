@@ -1,22 +1,30 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-class CuentaUsuario:
-    def __init__(self):
-        self.id = None
-        self.nombre_usuario = None
-        self.password_hash = None
-        self.roles = None
-        self.activa = None
+from dataclasses import dataclass, field
+from .autorizacion import Autorizacion
 
-    def asignar_roles(self, roles):
-        pass
+
+@dataclass
+class CuentaUsuario:
+    nombre_usuario: str
+    password_hash: str = field(repr=False)
+    roles: list = field(default_factory=list)
+    activa: bool = True
+    id: int | None = None
+
+    def asignar_roles(self, roles, director=False):
+        nuevos_roles = list(roles)
+        Autorizacion.validar_roles(nuevos_roles, director)
+        self.roles = nuevos_roles
 
     def desactivar(self):
-        pass
+        self.activa = False
 
     def activar(self):
-        pass
+        self.activa = True
 
     def cambiar_credencial(self, nuevo_hash):
-        pass
+        if not isinstance(nuevo_hash, str) or not nuevo_hash.strip():
+            raise ValueError('La credencial protegida no puede estar vacía.')
+        self.password_hash = nuevo_hash
