@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, Mock
 import _soporte  # Configura los imports de la aplicación.
 from sqlalchemy.engine import Connection, Engine
 from infraestructura.persistencia.repositories.cuenta_usuario_orm_repositorio import CuentaUsuarioORMRepositorio
@@ -95,7 +95,9 @@ class TestGestionUsuariosRepositorio(unittest.TestCase):
         }
 
         # Ejecutar
-        self.repositorio.estado(7, "INACTIVO", False)
+        validar = Mock()
+        self.repositorio.estado(7, "INACTIVO", validar)
+        validar.assert_called_once_with({'username': 'ana', 'es_director': False})
 
         # Verificar
         self.assertEqual(self.conexion.execute.call_count, 2)
@@ -109,19 +111,24 @@ class TestGestionUsuariosRepositorio(unittest.TestCase):
 
         # Ejecutar y verificar
         with self.assertRaisesRegex(ValueError, "La cuenta no existe"):
-            self.repositorio.estado(99, "INACTIVO", True)
+            self.repositorio.estado(99, "INACTIVO", Mock())
         self.conexion.execute.assert_called_once()
 
-    def test_no_permite_cambiar_roles_de_la_propia_cuenta(self):
-        # Inicializar
+    def test_rechazo_de_la_politica_revierte_la_transaccion_sin_escribir(self):
         self.conexion.execute.return_value.mappings.return_value.first.return_value = {
-            "id_usuario": 7, "es_director": False
+            "id_usuario": 7, "es_director": True, 'estudiante_vinculado': False
         }
-
-        # Ejecutar y verificar
-        with self.assertRaisesRegex(ValueError, "propia cuenta"):
-            self.repositorio.cambiar_roles(7, ["DOCENTE"], True, 7)
+        validar = Mock(side_effect=PermissionError('Sin permisos'))
+        with self.assertRaises(PermissionError):
+            self.repositorio.cambiar_roles(7, ["DOCENTE"], validar)
         self.conexion.execute.assert_called_once()
+        self.assertIs(self.motor.begin.return_value.__exit__.call_args.args[0], PermissionError)
+
+    def test_consulta_de_modificacion_bloquea_la_cuenta_en_mysql(self):
+        from sqlalchemy.dialects import mysql
+        self.repositorio.estado(7, 'INACTIVO', Mock())
+        consulta = self.conexion.execute.call_args_list[0].args[0]
+        self.assertIn('FOR UPDATE', str(consulta.compile(dialect=mysql.dialect())))
 
 if __name__ == "__main__":
     unittest.main()

@@ -35,9 +35,12 @@ class BaseSQLite:
             conexion.execute(text(
                 "CREATE TABLE docentes (id_usuario INTEGER UNIQUE NOT NULL)"
             ))
+            for tabla in ('coordinadores', 'directores', 'estudiantes'):
+                conexion.execute(text(
+                    f'CREATE TABLE {tabla} (id_usuario INTEGER UNIQUE NOT NULL)'))
             conexion.execute(text(
                 "INSERT INTO roles(id_rol,nombre) VALUES "
-                "(1,'DOCENTE')"
+                "(1,'DOCENTE'), (2,'COORDINADOR'), (3,'DIRECTOR'), (4,'ESTUDIANTE')"
             ))
 
     def consultar(self, sql, parametros=None):

@@ -137,7 +137,7 @@ class TestGestionUsuariosAppService(unittest.TestCase):
             self.servicio.cambiar_estado(7, estado, director=True)
         self.repositorio.estado.assert_not_called()
 
-    def test_cambiar_roles_delega_roles_y_actor(self):
+    def test_cambiar_roles_entrega_politica_de_director_y_estudiante(self):
         # Inicializar
         roles = ["DOCENTE", "COORDINADOR"]
 
@@ -145,9 +145,28 @@ class TestGestionUsuariosAppService(unittest.TestCase):
         self.servicio.cambiar_roles(7, roles, director=False, actor=99)
 
         # Verificar
-        self.repositorio.cambiar_roles.assert_called_once_with(
-            7, ["DOCENTE", "COORDINADOR"], False, 99
-        )
+        argumentos = self.repositorio.cambiar_roles.call_args.args
+        self.assertEqual(argumentos[:2], (7, roles))
+        validar = argumentos[2]
+        validar({'es_director': False, 'estudiante_vinculado': False})
+        with self.assertRaises(PermissionError):
+            validar({'es_director': True, 'estudiante_vinculado': False})
+        with self.assertRaises(ValueError):
+            validar({'es_director': False, 'estudiante_vinculado': True})
+
+    def test_no_cambia_roles_propios_ni_abre_una_transaccion(self):
+        with self.assertRaisesRegex(ValueError, 'propia cuenta'):
+            self.servicio.cambiar_roles(7, ['DOCENTE'], director=True, actor=7)
+        self.repositorio.cambiar_roles.assert_not_called()
+
+    def test_estado_valida_la_cuenta_consultada_por_el_repositorio(self):
+        self.servicio.cambiar_estado(7, 'INACTIVO', director=False)
+        argumentos = self.repositorio.estado.call_args.args
+        self.assertEqual(argumentos[:2], (7, 'INACTIVO'))
+        validar = argumentos[2]
+        validar({'es_director': False})
+        with self.assertRaises(PermissionError):
+            validar({'es_director': True})
 
 if __name__ == "__main__":
     unittest.main()

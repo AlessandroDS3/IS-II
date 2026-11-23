@@ -20,6 +20,11 @@ class Autorizacion:
         if es_director and not actor_director:
             raise PermissionError('Solo un director puede modificar cuentas de director.')
 
+    @staticmethod
+    def validar_roles_estudiante(roles, estudiante_vinculado):
+        if estudiante_vinculado and roles != ['ESTUDIANTE']:
+            raise ValueError('Esta cuenta está vinculada a un estudiante y debe conservar su rol.')
+
     def verificar_permiso(self, cuenta, operacion):
         raise NotImplementedError('La autorización por operación está pendiente de definir; use puede_acceder para verificar roles.')
 
