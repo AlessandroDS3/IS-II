@@ -1,23 +1,21 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
-from aplicacion.puertos.i_lector_cartillas import ILectorCartillas
+"""Adaptador del puerto ILectorCartillas sobre el motor ADDISON OMR."""
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from shutil import copy2
+from tempfile import TemporaryDirectory
+
+from infraestructura.vision.addison_omr import RECURSOS_PLANTILLA, VERSION, procesar
+
+CARPETA_PLANTILLA = Path(__file__).parent / 'addison_omr'
 
 
-class LectorBurbujasOpenCV(ILectorCartillas):
-    def __init__(self):
-        self.version_algoritmo = 'ADDISON OMR 0.5.4-experimental'
-        self.umbral_revision = None  # La confianza del lector es cualitativa, no porcentual.
-        self.requiere_plantilla = True
+class LectorBurbujasOpenCV:
+    """Implementa ILectorCartillas. La confianza del lector es cualitativa, no porcentual."""
 
-    def leer(self, imagen_ref, plantilla_ref):
-        from infraestructura.vision.addison_omr import procesar
+    version_algoritmo = f'ADDISON OMR {VERSION}'
 
+    def leer(self, imagen_ref, plantilla_ref=None):
         imagen = Path(imagen_ref).resolve(strict=True)
-        plantilla = Path(plantilla_ref).resolve(strict=True) if plantilla_ref else Path(__file__).parent / 'addison_omr'
+        plantilla = Path(plantilla_ref).resolve(strict=True) if plantilla_ref else CARPETA_PLANTILLA
         if not imagen.is_file() or not plantilla.is_dir():
             raise ValueError('La imagen o la carpeta de plantilla no son válidas.')
 
@@ -25,7 +23,7 @@ class LectorBurbujasOpenCV(ILectorCartillas):
         # Cada lectura recibe una copia aislada para evitar colisiones entre cargas.
         with TemporaryDirectory(prefix='addison_omr_') as temporal:
             trabajo = Path(temporal)
-            for nombre in ('02_2_mapa_coordenadas_burbujas.json', '02_3_plantilla_maestra_sin_marcas.png'):
+            for nombre in RECURSOS_PLANTILLA:
                 origen = plantilla / nombre
                 if not origen.is_file():
                     raise FileNotFoundError(f'Falta el recurso de plantilla: {nombre}')

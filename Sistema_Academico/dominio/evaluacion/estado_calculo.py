@@ -1,8 +1,8 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Estados de un resultado calculado (columna resultados_examen.estado)."""
+from enum import StrEnum
 
-from enum import Enum
 
-class EstadoCalculo(Enum):
-    CALCULADO = 1
-    REVISADO = 2
+class EstadoCalculo(StrEnum):
+    CALCULADO = 'CALCULADO'
+    REVISADO = 'REVISADO'
+    PUBLICADO = 'PUBLICADO'

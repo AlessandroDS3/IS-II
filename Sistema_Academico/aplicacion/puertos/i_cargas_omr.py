@@ -1,3 +1,4 @@
+"""Puerto de persistencia de las entradas de importación de cartillas."""
 from typing import Protocol
 
 

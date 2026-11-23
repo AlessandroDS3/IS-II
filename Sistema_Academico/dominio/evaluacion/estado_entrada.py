@@ -1,13 +1,15 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Estados de una entrada de importación de cartillas (columna cargas_omr.estado)."""
+from enum import StrEnum
 
-from enum import Enum
 
-class EstadoEntrada(Enum):
-    PENDIENTE_IDENTIFICACION = 1
-    ERROR_ARCHIVO = 2
-    LISTA_PARA_REGISTRAR = 3
-    REGISTRADA = 4
-    ESPERA_REEMPLAZO_LEGIBLE = 5
-    SUSTITUIDA = 6
-    DESCARTADA_JUSTIFICADA = 7
+class EstadoEntrada(StrEnum):
+    PENDIENTE = 'PENDIENTE'
+    REVISAR = 'REVISAR'
+    ERROR = 'ERROR'
+    DESCARTADA = 'DESCARTADA'
+    REGISTRADA = 'REGISTRADA'
+
+
+ESTADOS_FILTRABLES = ('',) + tuple(estado.value for estado in EstadoEntrada)
+ESTADOS_DESCARTABLES = (EstadoEntrada.PENDIENTE, EstadoEntrada.REVISAR, EstadoEntrada.ERROR)
+ESTADOS_REINTENTABLES = (EstadoEntrada.ERROR, EstadoEntrada.REVISAR)
