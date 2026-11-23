@@ -117,6 +117,13 @@ class TestGestionUsuariosAppService(unittest.TestCase):
         self.repositorio.crear.assert_not_called()
         self.protector.generar_hash.assert_not_called()
 
+    def test_contrasena_nueva_debe_combinar_letras_y_numeros(self):
+        for clave in ('abcdefgh', '12345678', '!!!!1234', 'abcdefgh!'):
+            with self.subTest(clave=clave), self.assertRaises(ValueError):
+                self.servicio.crear({**self.formulario, 'contrasena': clave}, director=False)
+        self.repositorio.crear.assert_not_called()
+        self.protector.generar_hash.assert_not_called()
+
 
     def test_rechaza_username_vacio_sin_persistir(self):
         # Inicializar

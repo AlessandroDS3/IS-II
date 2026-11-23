@@ -1,5 +1,6 @@
 from dominio.identidad_acceso.autorizacion import Autorizacion
 from dominio.identidad_acceso.i_gestion_usuarios_repositorio import IGestionUsuariosRepositorio
+from dominio.identidad_acceso.politica_contrasena import validar_contrasena
 
 
 class GestionUsuariosAppService:
@@ -11,8 +12,9 @@ class GestionUsuariosAppService:
         datos = {campo: formulario.get(campo, "").strip() for campo in ("username", "nombres", "apellidos")}
         roles = formulario.get("roles", [])
         clave = formulario.get("contrasena", "")
-        if not all(datos.values()) or len(clave) < 8 or not roles:
-            raise ValueError("Complete usuario, nombres y apellidos, seleccione roles y use una contraseña de al menos 8 caracteres.")
+        if not all(datos.values()) or not roles:
+            raise ValueError("Complete usuario, nombres y apellidos y seleccione roles.")
+        validar_contrasena(clave)
         Autorizacion.validar_roles(roles, director)
         self.repositorio.crear(datos, self.protector.generar_hash(clave), roles)
 

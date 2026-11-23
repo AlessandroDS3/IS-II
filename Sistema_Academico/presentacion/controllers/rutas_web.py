@@ -9,6 +9,8 @@ from flask import Response, abort, flash, redirect, render_template, request, se
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from dominio.identidad_acceso.autorizacion import Autorizacion
+from dominio.identidad_acceso.limitador_intentos import LimitadorIntentos
+from dominio.identidad_acceso.rol import ROLES_CON_PANEL, Rol, roles_asignables
 from presentacion.controllers.servicios_web import ServiciosWeb
 
 
@@ -25,53 +27,53 @@ ETAPAS_EXAMEN = {
 RUTAS_WEB = (
     ('login', '/', ('GET', 'POST'), None),
     ('elegir_rol', '/elegir-rol', ('GET',), None),
-    ('coordinador', '/coordinador', ('GET',), 'COORDINADOR'),
-    ('director', '/director', ('GET',), 'DIRECTOR'),
-    ('director_reporte', '/director/reporte.csv', ('GET',), 'DIRECTOR'),
-    ('estudiantes', '/coordinador/estudiantes', ('GET', 'POST'), 'COORDINADOR'),
-    ('editar_estudiante', '/coordinador/estudiantes/<int:id>/editar', ('GET', 'POST'), 'COORDINADOR'),
-    ('estado_estudiante', '/coordinador/estudiantes/<int:id>/estado', ('POST',), 'COORDINADOR'),
-    ('vincular_estudiante', '/coordinador/estudiantes/<int:id>/cuenta', ('POST',), 'COORDINADOR'),
-    ('asignaciones_estudiante', '/coordinador/estudiantes/<int:id>/asignaciones', ('GET', 'POST'), 'COORDINADOR'),
-    ('usuarios', '/coordinador/usuarios', ('GET', 'POST'), 'COORDINADOR'),
-    ('estado_usuario', '/coordinador/usuarios/<int:id>/estado', ('POST',), 'COORDINADOR'),
-    ('cambiar_roles_usuario', '/coordinador/usuarios/<int:id>/roles', ('POST',), 'COORDINADOR'),
-    ('organizacion', '/coordinador/organizacion', ('GET', 'POST'), 'COORDINADOR'),
-    ('simulacros', '/coordinador/simulacros', ('GET', 'POST'), 'COORDINADOR'),
-    ('banco_preguntas', '/coordinador/preguntas', ('GET',), 'COORDINADOR'),
-    ('espacio_examen', '/coordinador/examenes/<int:simulacro_id>', ('GET',), 'COORDINADOR'),
-    ('revisar_pregunta', '/coordinador/preguntas/<int:id>/revision', ('POST',), 'COORDINADOR'),
-    ('cartillas', '/coordinador/cartillas', ('GET', 'POST'), 'COORDINADOR'),
-    ('identificar_cartilla', '/coordinador/cartillas/<int:id>/identificar', ('POST',), 'COORDINADOR'),
-    ('detalle_carga', '/coordinador/cargas/<int:id>', ('GET',), 'COORDINADOR'),
-    ('imagen_entrada', '/coordinador/cargas/<int:id>/imagen', ('GET',), 'COORDINADOR'),
-    ('resolver_carga', '/coordinador/cargas/<int:id>/resolver', ('POST',), 'COORDINADOR'),
-    ('registrar_cartilla', '/coordinador/cartillas/<int:id>/registrar', ('POST',), 'COORDINADOR'),
-    ('descartar_cartilla', '/coordinador/cartillas/<int:id>/descartar', ('POST',), 'COORDINADOR'),
-    ('lecturas', '/coordinador/lecturas', ('GET',), 'COORDINADOR'),
-    ('imagen_cartilla', '/coordinador/cartillas/<int:id>/imagen', ('GET',), 'COORDINADOR'),
-    ('corregir_lectura', '/coordinador/lecturas/<int:id>/corregir', ('POST',), 'COORDINADOR'),
-    ('validar_cartilla', '/coordinador/cartillas/<int:id>/validar', ('POST',), 'COORDINADOR'),
-    ('resultados_coordinador', '/coordinador/resultados', ('GET',), 'COORDINADOR'),
-    ('detalle_resultado_coordinador', '/coordinador/resultados/<int:id>/detalle', ('GET',), 'COORDINADOR'),
-    ('revisar_resultado', '/coordinador/resultados/<int:id>/revisar', ('POST',), 'COORDINADOR'),
-    ('calcular_resultados', '/coordinador/resultados/calcular', ('POST',), 'COORDINADOR'),
-    ('publicar_resultados', '/coordinador/resultados/publicar', ('POST',), 'COORDINADOR'),
-    ('reportes', '/coordinador/reportes', ('GET',), 'COORDINADOR'),
-    ('descargar_reporte', '/coordinador/reportes/descargar', ('GET',), 'COORDINADOR'),
-    ('descargar_reporte_excel', '/coordinador/reportes/excel', ('GET',), 'COORDINADOR'),
-    ('estudiante', '/estudiante', ('GET',), 'ESTUDIANTE'),
-    ('mi_detalle', '/estudiante/resultados/<int:id>', ('GET',), 'ESTUDIANTE'),
-    ('docente', '/docente', ('GET',), 'DOCENTE'),
-    ('docente_tema', '/docente/temas', ('POST',), 'DOCENTE'),
-    ('docente_detalle', '/docente/preguntas/<int:id>', ('GET',), 'DOCENTE'),
-    ('docente_crear', '/docente/preguntas/nueva', ('GET', 'POST'), 'DOCENTE'),
-    ('docente_editar', '/docente/preguntas/<int:id>/editar', ('GET', 'POST'), 'DOCENTE'),
-    ('docente_imagen', '/docente/imagenes/<int:id>', ('GET',), 'DOCENTE'),
-    ('coordinador_imagen_pregunta', '/coordinador/preguntas/imagenes/<int:id>', ('GET',), 'COORDINADOR'),
-    ('docente_estadisticas', '/docente/estadisticas', ('GET',), 'DOCENTE'),
-    ('configurar_examen', '/coordinador/configurar-examen', ('GET', 'POST'), 'COORDINADOR'),
-    ('guardar_clave', '/coordinador/versiones/<int:id>/clave', ('POST',), 'COORDINADOR'),
+    ('coordinador', '/coordinador', ('GET',), Rol.COORDINADOR),
+    ('director', '/director', ('GET',), Rol.DIRECTOR),
+    ('director_reporte', '/director/reporte.csv', ('GET',), Rol.DIRECTOR),
+    ('estudiantes', '/coordinador/estudiantes', ('GET', 'POST'), Rol.COORDINADOR),
+    ('editar_estudiante', '/coordinador/estudiantes/<int:id>/editar', ('GET', 'POST'), Rol.COORDINADOR),
+    ('estado_estudiante', '/coordinador/estudiantes/<int:id>/estado', ('POST',), Rol.COORDINADOR),
+    ('vincular_estudiante', '/coordinador/estudiantes/<int:id>/cuenta', ('POST',), Rol.COORDINADOR),
+    ('asignaciones_estudiante', '/coordinador/estudiantes/<int:id>/asignaciones', ('GET', 'POST'), Rol.COORDINADOR),
+    ('usuarios', '/coordinador/usuarios', ('GET', 'POST'), Rol.COORDINADOR),
+    ('estado_usuario', '/coordinador/usuarios/<int:id>/estado', ('POST',), Rol.COORDINADOR),
+    ('cambiar_roles_usuario', '/coordinador/usuarios/<int:id>/roles', ('POST',), Rol.COORDINADOR),
+    ('organizacion', '/coordinador/organizacion', ('GET', 'POST'), Rol.COORDINADOR),
+    ('simulacros', '/coordinador/simulacros', ('GET', 'POST'), Rol.COORDINADOR),
+    ('banco_preguntas', '/coordinador/preguntas', ('GET',), Rol.COORDINADOR),
+    ('espacio_examen', '/coordinador/examenes/<int:simulacro_id>', ('GET',), Rol.COORDINADOR),
+    ('revisar_pregunta', '/coordinador/preguntas/<int:id>/revision', ('POST',), Rol.COORDINADOR),
+    ('cartillas', '/coordinador/cartillas', ('GET', 'POST'), Rol.COORDINADOR),
+    ('identificar_cartilla', '/coordinador/cartillas/<int:id>/identificar', ('POST',), Rol.COORDINADOR),
+    ('detalle_carga', '/coordinador/cargas/<int:id>', ('GET',), Rol.COORDINADOR),
+    ('imagen_entrada', '/coordinador/cargas/<int:id>/imagen', ('GET',), Rol.COORDINADOR),
+    ('resolver_carga', '/coordinador/cargas/<int:id>/resolver', ('POST',), Rol.COORDINADOR),
+    ('registrar_cartilla', '/coordinador/cartillas/<int:id>/registrar', ('POST',), Rol.COORDINADOR),
+    ('descartar_cartilla', '/coordinador/cartillas/<int:id>/descartar', ('POST',), Rol.COORDINADOR),
+    ('lecturas', '/coordinador/lecturas', ('GET',), Rol.COORDINADOR),
+    ('imagen_cartilla', '/coordinador/cartillas/<int:id>/imagen', ('GET',), Rol.COORDINADOR),
+    ('corregir_lectura', '/coordinador/lecturas/<int:id>/corregir', ('POST',), Rol.COORDINADOR),
+    ('validar_cartilla', '/coordinador/cartillas/<int:id>/validar', ('POST',), Rol.COORDINADOR),
+    ('resultados_coordinador', '/coordinador/resultados', ('GET',), Rol.COORDINADOR),
+    ('detalle_resultado_coordinador', '/coordinador/resultados/<int:id>/detalle', ('GET',), Rol.COORDINADOR),
+    ('revisar_resultado', '/coordinador/resultados/<int:id>/revisar', ('POST',), Rol.COORDINADOR),
+    ('calcular_resultados', '/coordinador/resultados/calcular', ('POST',), Rol.COORDINADOR),
+    ('publicar_resultados', '/coordinador/resultados/publicar', ('POST',), Rol.COORDINADOR),
+    ('reportes', '/coordinador/reportes', ('GET',), Rol.COORDINADOR),
+    ('descargar_reporte', '/coordinador/reportes/descargar', ('GET',), Rol.COORDINADOR),
+    ('descargar_reporte_excel', '/coordinador/reportes/excel', ('GET',), Rol.COORDINADOR),
+    ('estudiante', '/estudiante', ('GET',), Rol.ESTUDIANTE),
+    ('mi_detalle', '/estudiante/resultados/<int:id>', ('GET',), Rol.ESTUDIANTE),
+    ('docente', '/docente', ('GET',), Rol.DOCENTE),
+    ('docente_tema', '/docente/temas', ('POST',), Rol.DOCENTE),
+    ('docente_detalle', '/docente/preguntas/<int:id>', ('GET',), Rol.DOCENTE),
+    ('docente_crear', '/docente/preguntas/nueva', ('GET', 'POST'), Rol.DOCENTE),
+    ('docente_editar', '/docente/preguntas/<int:id>/editar', ('GET', 'POST'), Rol.DOCENTE),
+    ('docente_imagen', '/docente/imagenes/<int:id>', ('GET',), Rol.DOCENTE),
+    ('coordinador_imagen_pregunta', '/coordinador/preguntas/imagenes/<int:id>', ('GET',), Rol.COORDINADOR),
+    ('docente_estadisticas', '/docente/estadisticas', ('GET',), Rol.DOCENTE),
+    ('configurar_examen', '/coordinador/configurar-examen', ('GET', 'POST'), Rol.COORDINADOR),
+    ('guardar_clave', '/coordinador/versiones/<int:id>/clave', ('POST',), Rol.COORDINADOR),
     ('salir', '/salir', ('POST',), None),
 )
 
@@ -93,12 +95,14 @@ class ControladorWeb:
     def __init__(self, app, servicios: ServiciosWeb):
         self.app = app
         self.servicios = servicios
+        self.limitador = LimitadorIntentos()
+        app.extensions['limitador_acceso'] = self.limitador
 
     def contexto_navegacion(self):
         etapa = {'detalle_resultado_coordinador': 'resultados_coordinador', 'detalle_carga': 'cartillas'}.get(request.endpoint, request.endpoint)
         if (etapa not in ETAPAS_EXAMEN or request.endpoint == 'espacio_examen'
                 or not self.servicios.simulacros_servicio or not session.get('usuario')
-                or not Autorizacion.puede_acceder(session.get('roles', []), 'COORDINADOR')):
+                or not Autorizacion.puede_acceder(session.get('roles', []), Rol.COORDINADOR)):
             return {}
         examen = request.values.get('examen', type=int)
         if request.endpoint == 'detalle_carga' and self.servicios.cartillas_servicio:
@@ -139,16 +143,22 @@ class ControladorWeb:
             if self.servicios.servicio is None:
                 flash('Configure la conexión a la base de datos para iniciar sesión.', 'error')
                 return render_template(LOGIN_TEMPLATE), 503
+            usuario = request.form.get('usuario', '').strip()
+            if self.limitador.bloqueado(usuario):
+                flash('Demasiados intentos fallidos. Espera unos minutos antes de volver a intentarlo.', 'error')
+                return render_template(LOGIN_TEMPLATE), 429
             try:
-                cuenta = self.servicios.servicio.iniciar_sesion(request.form.get('usuario', ''), request.form.get('contrasena', ''))
+                cuenta = self.servicios.servicio.iniciar_sesion(usuario, request.form.get('contrasena', ''))
             except SQLAlchemyError:
                 self.app.logger.exception('Error de conexión al consultar la cuenta')
                 flash('No se pudo consultar la base de datos. Revise la conexión.', 'error')
                 return render_template(LOGIN_TEMPLATE), 503
             if not cuenta:
+                self.limitador.registrar_fallo(usuario)
                 flash('Usuario o contraseña incorrectos, o cuenta inactiva.', 'error')
                 return render_template(LOGIN_TEMPLATE), 401
-            roles = [r for r in cuenta['roles'] if r in ('COORDINADOR', 'DIRECTOR', 'ESTUDIANTE', 'DOCENTE')]
+            self.limitador.reiniciar(usuario)
+            roles = [r for r in cuenta['roles'] if r in ROLES_CON_PANEL]
             if not roles:
                 flash('Esta cuenta no tiene acceso a los paneles disponibles.', 'error')
                 return render_template(LOGIN_TEMPLATE), 403
@@ -267,7 +277,7 @@ class ControladorWeb:
     def usuarios(self):
         if not self.servicios.usuarios_servicio:
             abort(503)
-        es_director = 'DIRECTOR' in session['roles']
+        es_director = Rol.DIRECTOR in session['roles']
         if request.method == 'POST':
             try:
                 datos = request.form.to_dict()
@@ -284,13 +294,17 @@ class ControladorWeb:
         except SQLAlchemyError:
             self.app.logger.exception('Error al consultar usuarios')
             abort(503)
-        return render_template('coordinador/usuarios.html', rol='Coordinador', nombre=session['nombre'], usuarios=lista, es_director=es_director)
+        return render_template(
+            'coordinador/usuarios.html', rol='Coordinador', nombre=session['nombre'],
+            usuarios=lista, es_director=es_director,
+            roles_disponibles=roles_asignables(es_director), rol_director=Rol.DIRECTOR,
+        )
 
     def estado_usuario(self, id):
         if not self.servicios.usuarios_servicio:
             abort(503)
         try:
-            self.servicios.usuarios_servicio.cambiar_estado(id, request.form.get('estado', ''), 'DIRECTOR' in session['roles'])
+            self.servicios.usuarios_servicio.cambiar_estado(id, request.form.get('estado', ''), Rol.DIRECTOR in session['roles'])
             flash('Estado actualizado.', 'ok')
         except (ValueError, PermissionError) as error:
             flash(str(error), 'error')
@@ -298,7 +312,7 @@ class ControladorWeb:
 
     def cambiar_roles_usuario(self, id):
         try:
-            self.servicios.usuarios_servicio.cambiar_roles(id, request.form.getlist('roles'), 'DIRECTOR' in session['roles'], session['usuario_id'])
+            self.servicios.usuarios_servicio.cambiar_roles(id, request.form.getlist('roles'), Rol.DIRECTOR in session['roles'], session['usuario_id'])
             flash('Roles actualizados.', 'ok')
         except (ValueError, PermissionError) as error:
             flash(str(error), 'error')

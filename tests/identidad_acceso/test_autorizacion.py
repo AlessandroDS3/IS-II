@@ -1,8 +1,13 @@
 import unittest
 from Sistema_Academico.dominio.identidad_acceso.autorizacion import Autorizacion
+from Sistema_Academico.dominio.identidad_acceso.rol import Rol
 
 
 class TestAccesoPorRol(unittest.TestCase):
+
+    def test_roles_conservan_los_nombres_almacenados_en_la_base(self):
+        self.assertEqual([r.value for r in Rol],
+                         ['ESTUDIANTE', 'DOCENTE', 'COORDINADOR', 'DIRECTOR'])
 
     def test_permite_acceso_con_rol_requerido(self):
         # Inicializar

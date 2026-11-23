@@ -1,18 +1,20 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from .rol import Rol
+
 class Autorizacion:
     @staticmethod
     def puede_acceder(roles, requerido):
-        return requerido in roles or (requerido == 'COORDINADOR' and 'DIRECTOR' in roles)
+        return requerido in roles or (requerido == Rol.COORDINADOR and Rol.DIRECTOR in roles)
 
     @staticmethod
     def validar_roles(roles, director):
-        if not roles or any(r not in ('ESTUDIANTE', 'DOCENTE', 'COORDINADOR', 'DIRECTOR') for r in roles) or len(set(roles)) != len(roles):
+        if not roles or any(r not in Rol for r in roles) or len(set(roles)) != len(roles):
             raise ValueError('Roles no válidos.')
-        if 'ESTUDIANTE' in roles and len(roles) != 1:
+        if Rol.ESTUDIANTE in roles and len(roles) != 1:
             raise ValueError('El rol estudiante no se puede combinar con otros roles.')
-        if 'DIRECTOR' in roles and not director:
+        if Rol.DIRECTOR in roles and not director:
             raise PermissionError('Solo un director puede asignar el rol director.')
 
     @staticmethod
@@ -22,7 +24,7 @@ class Autorizacion:
 
     @staticmethod
     def validar_roles_estudiante(roles, estudiante_vinculado):
-        if estudiante_vinculado and roles != ['ESTUDIANTE']:
+        if estudiante_vinculado and roles != [Rol.ESTUDIANTE]:
             raise ValueError('Esta cuenta está vinculada a un estudiante y debe conservar su rol.')
 
     def verificar_permiso(self, cuenta, operacion):

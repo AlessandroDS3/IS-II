@@ -1,5 +1,6 @@
 """Persistencia de cuentas; las políticas se validan dentro de la transacción."""
 from sqlalchemy import column, select, table, text
+from dominio.identidad_acceso.rol import ROLES_CON_PERFIL, Rol
 
 
 class GestionUsuariosRepositorio:
@@ -37,7 +38,7 @@ class GestionUsuariosRepositorio:
         es_director = select(asignaciones.c.id_usuario).join(
             roles, roles.c.id_rol == asignaciones.c.id_rol
         ).where(asignaciones.c.id_usuario == usuarios.c.id_usuario,
-                roles.c.nombre == 'DIRECTOR').exists()
+                roles.c.nombre == Rol.DIRECTOR).exists()
         vinculado = select(estudiantes.c.id_usuario).where(
             estudiantes.c.id_usuario == usuarios.c.id_usuario).exists()
         consulta = select(
@@ -76,9 +77,7 @@ class GestionUsuariosRepositorio:
     @staticmethod
     def _sincronizar_perfiles(conexion, id_usuario, roles):
         # Los nombres de tablas proceden de esta lista cerrada, nunca del formulario.
-        perfiles = (('DOCENTE', 'docentes'), ('COORDINADOR', 'coordinadores'),
-                    ('DIRECTOR', 'directores'))
-        for rol, tabla in perfiles:
+        for rol, tabla in ROLES_CON_PERFIL:
             if rol in roles:
                 conexion.execute(text(f"""
                     INSERT INTO {tabla}(id_usuario)

@@ -108,10 +108,11 @@ class TestGestionUsuariosRepositorio(unittest.TestCase):
     def test_estado_rechaza_cuenta_inexistente_sin_actualizar(self):
         # Inicializar
         self.conexion.execute.return_value.mappings.return_value.first.return_value = None
+        validar = Mock()
 
         # Ejecutar y verificar
         with self.assertRaisesRegex(ValueError, "La cuenta no existe"):
-            self.repositorio.estado(99, "INACTIVO", Mock())
+            self.repositorio.estado(99, "INACTIVO", validar)
         self.conexion.execute.assert_called_once()
 
     def test_rechazo_de_la_politica_revierte_la_transaccion_sin_escribir(self):

@@ -84,6 +84,44 @@ class TestRutasWeb(unittest.TestCase):
         self.servicios.servicio = None
         self.assertEqual(self.cliente.post('/').status_code, 503)
 
+    def test_cinco_fallos_bloquean_la_siguiente_peticion_sin_consultar_cuenta(self):
+        self.acceso.iniciar_sesion.return_value = None
+        for _ in range(5):
+            self.assertEqual(self.cliente.post('/', data={'usuario': ' ana '}).status_code, 401)
+        self.assertEqual(self.cliente.post('/', data={'usuario': 'ana'}).status_code, 429)
+        self.assertEqual(self.acceso.iniciar_sesion.call_count, 5)
+
+    def test_bloqueo_no_afecta_a_otro_usuario(self):
+        self.acceso.iniciar_sesion.return_value = None
+        for _ in range(5):
+            self.cliente.post('/', data={'usuario': 'ana'})
+        self.assertEqual(self.cliente.post('/', data={'usuario': 'otro'}).status_code, 401)
+
+    def test_bloqueo_vence_y_login_correcto_reinicia_los_fallos(self):
+        tiempo = [1000]
+        self.app.extensions['limitador_acceso'].reloj = lambda: tiempo[0]
+        self.acceso.iniciar_sesion.return_value = None
+        for _ in range(5):
+            self.cliente.post('/', data={'usuario': 'ana'})
+        self.acceso.iniciar_sesion.return_value = self.cuenta
+        self.assertEqual(self.cliente.post('/', data={'usuario': 'ana'}).status_code, 429)
+        tiempo[0] += 300
+        self.assertEqual(self.cliente.post('/', data={'usuario': 'ana'}).status_code, 302)
+        self.acceso.iniciar_sesion.return_value = None
+        for _ in range(4):
+            self.assertEqual(self.cliente.post('/', data={'usuario': 'ana'}).status_code, 401)
+        self.acceso.iniciar_sesion.return_value = self.cuenta
+        self.assertEqual(self.cliente.post('/', data={'usuario': 'ana'}).status_code, 302)
+        self.acceso.iniciar_sesion.return_value = None
+        self.assertEqual(self.cliente.post('/', data={'usuario': 'ana'}).status_code, 401)
+
+    def test_fallos_de_base_de_datos_no_bloquean_la_cuenta(self):
+        self.acceso.iniciar_sesion.side_effect = SQLAlchemyError('sin conexión')
+        for _ in range(6):
+            self.assertEqual(self.cliente.post('/', data={'usuario': 'ana'}).status_code, 503)
+        self.acceso.iniciar_sesion.side_effect = None
+        self.assertEqual(self.cliente.post('/', data={'usuario': 'ana'}).status_code, 302)
+
     def test_permisos_se_actualizan_desde_la_cuenta_activa(self):
         self.autenticar()
         self.cuenta['roles'] = ['DOCENTE']
