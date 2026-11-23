@@ -24,6 +24,13 @@ Sistema_Academico/mysql_clave.local
 /entrega/
 /output/
 /tmp/
+# Exportaciones locales de SonarQube; conservar aparte la revisión manual.
+/reportes/sonarqube/defectos.csv
+/reportes/sonarqube/resultados.json
+/reportes/sonarqube/ejecucion.txt
+/reportes/sonarqube/reporte_defectos.md
+/reportes/sonarqube/correcciones_identidad_acceso.md
+/reportes/sonarqube/despues_identidad_acceso/
 ~$*.docx
 ~$*.xlsx
 Thumbs.db
