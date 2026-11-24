@@ -1,8 +1,0 @@
-{% macro opciones_roles(disponibles, seleccionados=()) %}
-  {% for item in disponibles %}
-    <label>
-      <input type="checkbox" name="roles" value="{{ item }}"{% if item in seleccionados %} checked{% endif %}>
-      {{ item|capitalize }}
-    </label>
-  {% endfor %}
-{% endmacro %}
