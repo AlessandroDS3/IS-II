@@ -21,3 +21,9 @@ Sistema_Academico/datos_privados/
 .scannerwork/
 .idea/
 .vscode/
+
+# Archivos generados por Poetry
+dist/
+build/
+*.egg-info/
+poetry.toml

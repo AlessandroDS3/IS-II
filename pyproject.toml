@@ -1,0 +1,39 @@
+[project]
+name = "sistema-academico"
+version = "0.1.0"
+description = "Sistema académico web con Flask y SQLAlchemy"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "Flask>=3.0,<4",
+    "Flask-WTF>=1.2,<2",
+    "SQLAlchemy>=2.0,<3",
+    "PyMySQL>=1.1,<2",
+    "numpy>=1.26,<3",
+    "opencv-python>=4.8,<5",
+    "PyMuPDF>=1.24,<2",
+    "openpyxl>=3.1,<4",
+]
+
+[tool.poetry]
+packages = [
+    { include = "app.py", from = "Sistema_Academico" },
+    { include = "run.py", from = "Sistema_Academico" },
+    { include = "aplicacion", from = "Sistema_Academico" },
+    { include = "dominio", from = "Sistema_Academico" },
+    { include = "infraestructura", from = "Sistema_Academico" },
+    { include = "presentacion", from = "Sistema_Academico" },
+]
+exclude = ["**/__pycache__/**", "**/*.pyc", "**/*.local", "**/.env", "**/.env.*", "Sistema_Academico/datos_privados/**"]
+
+[tool.poetry.group.test.dependencies]
+pytest = ">=8,<10"
+pytest-cov = ">=5,<8"
+
+[tool.pytest.ini_options]
+testpaths = ["Sistema_Academico/tests"]
+pythonpath = ["Sistema_Academico"]
+
+[build-system]
+requires = ["poetry-core>=2.4,<3"]
+build-backend = "poetry.core.masonry.api"
