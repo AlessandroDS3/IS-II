@@ -1,27 +1,21 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Casos de uso de publicación de resultados, ranking y estadísticas institucionales."""
+from dominio.publicacion_ranking.i_publicacion_repositorio import IPublicacionRepositorio
+
 
 class PublicacionExamenAppService:
-    def __init__(self):
-        pass
+    def __init__(self, repositorio: IPublicacionRepositorio):
+        self.repositorio = repositorio
 
-    def publicar_o_actualizar(self, examen_id):
-        pass
+    def examenes(self):
+        return self.repositorio.examenes()
 
-    def consultar_vigente(self, examen_id):
-        pass
+    def publicar(self, examen, usuario):
+        if not examen:
+            raise ValueError('Selecciona un examen.')
+        return self.repositorio.publicar(examen, usuario)
 
-    def actualizar_examenes_afectados(self, examen_ids, operacion_id):
-        pass
+    def ranking(self, examen):
+        return self.repositorio.ranking(examen) if examen else []
 
-    def consultar_ranking(self, examen_id):
-        pass
-
-    def consultar_estadisticas_docente(self, docente_id):
-        pass
-
-    def consultar_estadisticas_institucionales(self, ciclo_id):
-        pass
-
-    def comparar_areas_y_examenes(self, ciclo_id):
-        pass
+    def estadisticas_director(self, ciclo):
+        return self.repositorio.datos_director(ciclo)

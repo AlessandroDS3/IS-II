@@ -1,18 +1,19 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Casos de uso del estudiante para consultar sus resultados publicados."""
+from dominio.publicacion_ranking.i_publicacion_repositorio import IResultadosEstudianteRepositorio
+
 
 class ResultadosEstudianteAppService:
-    def __init__(self):
-        pass
+    def __init__(self, repositorio: IResultadosEstudianteRepositorio):
+        self.repositorio = repositorio
 
-    def ver_mis_resultados(self, estudiante_id, examen_id):
-        pass
+    def mis_resultados(self, usuario):
+        return self.repositorio.mis_resultados(usuario)
 
-    def ver_desglose(self, estudiante_id, examen_id):
-        pass
+    def mi_resultado(self, usuario, resultado):
+        return self.repositorio.mi_resultado(usuario, resultado)
 
-    def consultar_evolucion(self, estudiante_id):
-        pass
+    def detalle(self, usuario, resultado):
+        return self.repositorio.detalle(usuario, resultado)
 
-    def consultar_rendimiento_por_materia(self, estudiante_id):
-        pass
+    def materias(self, usuario, resultado):
+        return self.repositorio.materias(usuario, resultado)
