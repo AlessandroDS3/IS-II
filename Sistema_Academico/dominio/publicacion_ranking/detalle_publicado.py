@@ -1,16 +1,18 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Detalle por pregunta de un resultado publicado."""
+from dataclasses import dataclass
+from decimal import Decimal
 
+
+@dataclass(frozen=True)
 class DetallePublicado:
-    def __init__(self):
-        self.posicion = None
-        self.item_id = None
-        self.pregunta_id = None
-        self.version_pregunta_id = None
-        self.autor_id = None
-        self.respuesta_observada = None
-        self.respuesta_efectiva = None
-        self.respuesta_correcta = None
-        self.tipo_resultado = None
-        self.puntaje_aplicado = None
-        self.materia_id = None
+    posicion: int
+    item_id: int
+    pregunta_id: int
+    version_pregunta_id: int
+    respuesta_efectiva: str | None
+    respuesta_correcta: str
+    tipo_resultado: str
+    puntaje_aplicado: Decimal
+    materia_id: int | None = None
+    autor_id: int | None = None
+    respuesta_observada: str | None = None

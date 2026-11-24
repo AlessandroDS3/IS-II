@@ -1,21 +1,30 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Puertos de persistencia de la publicación de resultados."""
+from typing import Protocol
 
-class IPublicacionRepositorio:
-    def __init__(self):
-        pass
 
-    def guardar(self, publicacion_examen):
-        pass
+class IPublicacionRepositorio(Protocol):
+    def examenes(self):
+        """Exámenes con su área."""
 
-    def buscar_por_id(self, id):
-        pass
+    def publicar(self, examen, usuario):
+        """Publica (o republica) los resultados revisados del examen."""
 
-    def listar(self, filtros):
-        pass
+    def ranking(self, examen):
+        """Ranking publicado del examen."""
 
-    def obtener_vigente(self, examen_id):
-        pass
+    def datos_director(self, ciclo):
+        """EstadisticasDirector con ciclos, filas por examen y resumen."""
 
-    def guardar_vigente(self, publicacion):
-        pass
+
+class IResultadosEstudianteRepositorio(Protocol):
+    def mis_resultados(self, usuario):
+        """Resultados publicados del estudiante vinculado a la cuenta."""
+
+    def mi_resultado(self, usuario, resultado):
+        """Un resultado publicado del estudiante o None."""
+
+    def detalle(self, usuario, resultado):
+        """Detalle por pregunta de un resultado publicado del estudiante."""
+
+    def materias(self, usuario, resultado):
+        """Resumen por materia de un resultado publicado del estudiante."""

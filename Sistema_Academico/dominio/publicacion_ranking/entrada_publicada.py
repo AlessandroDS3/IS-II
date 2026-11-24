@@ -1,10 +1,12 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""Resultado de un estudiante dentro de una publicación."""
+from dataclasses import dataclass
+from decimal import Decimal
 
+
+@dataclass(frozen=True)
 class EntradaPublicada:
-    def __init__(self):
-        self.estudiante_id = None
-        self.participacion_id = None
-        self.calculo_id = None
-        self.puntaje = None
-        self.puesto = None
+    estudiante_id: int
+    participacion_id: int | None
+    calculo_id: int
+    puntaje: Decimal
+    puesto: int | None = None
